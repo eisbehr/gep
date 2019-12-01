@@ -1,0 +1,11 @@
+\#*\#
+.\#*
+*~
+.directory
+bin/
+atlas_include/
+gep_vs/
+release/
+run_tree/
+project.4coder
+gep_packer_vs/
