@@ -14,6 +14,7 @@ There are `build.bat` scripts to build the different parts of the project.
 - After that a simple `build.bat` will create a debug build. 
 - `build.bat release` will create a release build. 
 - `build.bat clean` will remove the directories created in the full build.
+
 To build everything at once, use the `buildall.bat` which takes the same arguments and simply calls the `build.bat` files for all the sub-projects.
 
 To create a release zip, call `release.sh` with the name for the finished file (without .zip) as an argument. (Yes, this is a bash script. I use Windows Subsystem for Linux.)
