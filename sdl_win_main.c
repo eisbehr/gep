@@ -409,12 +409,26 @@ int main(int argc, char** argv) {
                             
                             case SDL_SCANCODE_RETURN: {
                                 g->Input.Menu = 1;
-                                g->InDown.y = 1;
+                                g->InDown.Menu = 1;
                             } break;
-                            case SDL_SCANCODE_ESCAPE: {
+                            case SDL_SCANCODE_BACKSPACE: {
                                 g->Input.Option = 1;
-                                g->InDown.y = 1;
+                                g->InDown.Option = 1;
                             } break;
+                            
+                            case SDL_SCANCODE_ESCAPE: {
+                                ToggleSettings = 1;
+                            } break;
+                            case SDL_SCANCODE_F9: {
+                                TileMapDbgMode = !TileMapDbgMode;
+                            } break;
+                            case SDL_SCANCODE_F10: {
+                                WindowMapDbgMode = !WindowMapDbgMode;
+                            } break;
+                            case SDL_SCANCODE_F11: {
+                                TileSpriteMemDbgMode = !TileSpriteMemDbgMode;
+                            } break;
+                            
                             case SDL_SCANCODE_LCTRL: {
                                 devinput *d = &DevInput;
                                 if(e->windowID == SDL_GetWindowID(TileMapDbgWindow)) {
@@ -490,18 +504,6 @@ int main(int argc, char** argv) {
                             case SDL_SCANCODE_BACKSPACE: {
                                 g->Input.Option = 0;
                                 g->InUp.Option = 1;
-                            } break;
-                            case SDL_SCANCODE_ESCAPE: {
-                                ToggleSettings = 1;
-                            } break;
-                            case SDL_SCANCODE_F9: {
-                                TileMapDbgMode = !TileMapDbgMode;
-                            } break;
-                            case SDL_SCANCODE_F10: {
-                                WindowMapDbgMode = !WindowMapDbgMode;
-                            } break;
-                            case SDL_SCANCODE_F11: {
-                                TileSpriteMemDbgMode = !TileSpriteMemDbgMode;
                             } break;
                             case SDL_SCANCODE_LCTRL: {
                                 devinput *d = &DevInput;
