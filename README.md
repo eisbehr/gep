@@ -1,3 +1,5 @@
+![Flappy demo](https://github.com/eisbehr/gep/raw/misc-files/misc/flappy.gif)
+
 # GameEngine pocket
 A game engine for creating GameBoy (Color) inspired games.
 
