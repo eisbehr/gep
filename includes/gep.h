@@ -24,7 +24,6 @@ typedef uintptr_t uptr;
 typedef intptr_t ptr;
 
 #define Assert(Expression) if(!(Expression)) {int *x = 0; *x = 0;}
-//#define StaticAssert(Expression) _STATIC_ASSERT(Expression);
 #define StaticAssert(Expression) static_assert(Expression, "Static assert failed");
 
 #define ArrayLength(Arr) (sizeof(Arr)/sizeof(Arr[0]))
@@ -54,7 +53,7 @@ typedef intptr_t ptr;
 #define pforyu(max) for(u64 y=0; y<(max); y++)
 #define pforzu(max) for(u64 z=0; z<(max); z++)
 
-#define Kilobytes(size) (ptr)size*1024
+#define Kilobytes(size) ((ptr)size*1024)
 #define Megabytes(size) Kilobytes((ptr)size*1024)
 #define Gigabytes(size) Megabytes((ptr)size*1024)
 
