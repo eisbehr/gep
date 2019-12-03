@@ -26,7 +26,7 @@ To create a release zip, call `release.sh` with the name for the finished file (
 Your game will be loaded by the `gep.exe` as a file called `game.dll`.
 The dll needs a few exported symbols that the exe will load.
 
-One `update()` function
+One `update()` function which will be called at a fixed 60 times per second.
 ``` c
 DLLEXPORT void update(gep_state *GS)
 ```
