@@ -74,14 +74,14 @@ typedef struct {
     b32 ctrl;
 } devinput;
 
+static devinput DevInput;
+
 typedef struct {
     b32 a, b, x, y;
     b32 Up, Down, Left, Right;
     b32 L1, L2, R1, R2;
     b32 Menu, Option;
 } gepinput;
-
-static devinput DevInput;
 
 typedef struct {
     b32 TileDisplay; // Display tile layer

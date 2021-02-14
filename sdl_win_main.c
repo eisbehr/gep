@@ -172,9 +172,20 @@ int main(int argc, char** argv) {
     if(!PrefPath) {
         SDL_LogError(0, "Failed to get PrefPath");
     }
-    prefs *Prefs = &(prefs){0};
+    
+    // set default values here
+    prefs *Prefs = &(prefs){.Version=1, .Fullscreen=0, .Volume=50};
     if(!settings_read(Prefs)) {
-        SDL_LogWarn(0, "Failed to read settings, this is normal on first start or when the config file was deleted. Just keep going with defaults.");
+        SDL_LogWarn(0, "Failed to read settings, this is normal on first start or when the config file was deleted. Just keep going with defaults, and create a default config file");
+        if(!settings_write(Prefs)) {
+            SDL_LogError(0, "Failed to write default settings, something is wrong with the system configuration or storage device.");
+            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,
+                                     "Failed to write default settings file",
+                                     "Failed to write default settings file. Something is wrong with the system configuration or storage device. Exiting",
+                                     Window);
+            return 1;
+            
+        }
     }
     settings_early_apply(Prefs);
     
@@ -250,7 +261,7 @@ int main(int argc, char** argv) {
     while(Running) {
         BeginFrame = SDL_GetPerformanceCounter();
         if(VsyncEnabled) {
-            // calculate number of update timesteps (calls to the update() dunction) in one render frame (from one present() to the next)
+            // calculate number of update timesteps (calls to the update() function) in one render frame (from one present() to the next)
             UpdateRun += 60.0/VsyncHz; 
         }
         while(UpdateRun >= 0.0) {
