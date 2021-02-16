@@ -363,14 +363,14 @@ static gep_state *g;
 
 static u16 *GlobalCharLookupTable;
 static char TmpStrBuffer[ScreenW*(ScreenH+1)];
-void set_tile_string(int x, int y, const char *Str) {
+void set_tile_string(u16 *Map, int x, int y, const char *Str) {
     int XOrig = x;
     while(*Str) {
         if(*Str == '\n') {
             y++;
             x = XOrig;
         }
-        map_set16(g->BGMap, x, y, GlobalCharLookupTable[*Str]);
+        map_set16(Map, x, y, GlobalCharLookupTable[*Str]);
         x++;
         Str++;
     }
@@ -389,7 +389,7 @@ typedef enum {
 } text_box_border;
 
 static u16 *GlobalTextBoxBorderLookupTable;
-b32 set_tile_text_box(int XMin, int YMin, int XMax, int YMax) {
+b32 set_tile_text_box(u16 *Map, int XMin, int YMin, int XMax, int YMax) {
     XMax--;
     YMax--;
     if(XMin < 0) return 0;
@@ -398,29 +398,28 @@ b32 set_tile_text_box(int XMin, int YMin, int XMax, int YMax) {
     if(YMin > YMax) return 0;
     
     int Width = XMax-XMin;
-    
     int Height = YMax-YMin;
     
     // Corners
-    map_set16(g->BGMap, XMin, YMin, GlobalTextBoxBorderLookupTable[TextBoxBorderTopLeft]);
-    map_set16(g->BGMap, XMax, YMin, GlobalTextBoxBorderLookupTable[TextBoxBorderTopRight]);
-    map_set16(g->BGMap, XMin, YMax, GlobalTextBoxBorderLookupTable[TextBoxBorderBottomLeft]);
-    map_set16(g->BGMap, XMax, YMax, GlobalTextBoxBorderLookupTable[TextBoxBorderBottomRight]);
+    map_set16(Map, XMin, YMin, GlobalTextBoxBorderLookupTable[TextBoxBorderTopLeft]);
+    map_set16(Map, XMax, YMin, GlobalTextBoxBorderLookupTable[TextBoxBorderTopRight]);
+    map_set16(Map, XMin, YMax, GlobalTextBoxBorderLookupTable[TextBoxBorderBottomLeft]);
+    map_set16(Map, XMax, YMax, GlobalTextBoxBorderLookupTable[TextBoxBorderBottomRight]);
     
     // Top and Bottom
     for(int i=1; i<Width; i++) {
-        map_set16(g->BGMap, XMin+i, YMin, GlobalTextBoxBorderLookupTable[TextBoxBorderTop]);
-        map_set16(g->BGMap, XMin+i, YMax, GlobalTextBoxBorderLookupTable[TextBoxBorderBottom]);
+        map_set16(Map, XMin+i, YMin, GlobalTextBoxBorderLookupTable[TextBoxBorderTop]);
+        map_set16(Map, XMin+i, YMax, GlobalTextBoxBorderLookupTable[TextBoxBorderBottom]);
     }
     
     // Sides
     for(int i=1; i<Height; i++) {
-        map_set16(g->BGMap, XMin, YMin+i, GlobalTextBoxBorderLookupTable[TextBoxBorderMiddleLeft]);
-        map_set16(g->BGMap, XMax, YMin+i, GlobalTextBoxBorderLookupTable[TextBoxBorderMiddleRight]);
+        map_set16(Map, XMin, YMin+i, GlobalTextBoxBorderLookupTable[TextBoxBorderMiddleLeft]);
+        map_set16(Map, XMax, YMin+i, GlobalTextBoxBorderLookupTable[TextBoxBorderMiddleRight]);
     }
     
     // FillCenter
-    map_set_rect16(g->BGMap, XMin+1, YMin+1, XMax, YMax, 0);
+    map_set_rect16(Map, XMin+1, YMin+1, XMax, YMax, 0);
     
     return 1;
 }

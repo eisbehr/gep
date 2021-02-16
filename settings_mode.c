@@ -175,23 +175,23 @@ void play_change_settings_sound(void) {
 }
 
 void set_fullscreen_tiles(void) {
-    set_tile_string(15,FirstSettingOffset+SetFullscreen, SetData.Fullscreen ? "YES" : "NO ");
+    set_tile_string(g->BGMap, 15,FirstSettingOffset+SetFullscreen, SetData.Fullscreen ? "YES" : "NO ");
 }
 
 void set_volume_tiles(void) {
     char Buffer[4];
     snprintf(Buffer, ArraySize(Buffer), "%.3i", g->Audc.MasterVol);
-    set_tile_string(SetData.ValBaseX,SetData.ValBaseY, Buffer);
+    set_tile_string(g->BGMap, SetData.ValBaseX,SetData.ValBaseY, Buffer);
 }
 
 void set_settings_tiles(void) {
-    set_tile_text_box(0,0, ScreenW, ScreenH);
-    set_tile_string(1,1, "SETTINGS");
-    set_tile_string(1,FirstSettingOffset+SetFullscreen, "FULLSCREEN");
+    set_tile_text_box(g->BGMap, 0,0, ScreenW, ScreenH);
+    set_tile_string(g->BGMap, 1,1, "SETTINGS");
+    set_tile_string(g->BGMap, 1,FirstSettingOffset+SetFullscreen, "FULLSCREEN");
     set_fullscreen_tiles();
     SetData.ValBaseX = 15;
     SetData.ValBaseY = FirstSettingOffset+SetVolume;
-    set_tile_string(1,SetData.ValBaseY, "VOLUME");
+    set_tile_string(g->BGMap, 1,SetData.ValBaseY, "VOLUME");
     set_volume_tiles();
 }
 
@@ -326,10 +326,10 @@ void update_set_mode_fullscreen_countdown(void) {
         SetData.CountdownInitialized = 1;
         
         SetData.CountDownFrames = 9*60;
-        set_tile_text_box(XString-1, YString-1, XString+StrLen+1, YString+3);
-        set_tile_string(XString, YString, Str);
-        set_tile_string(XString, YString+1, "NO");
-        set_tile_string(XString+StrLen-3, YString+1, "YES");
+        set_tile_text_box(g->BGMap, XString-1, YString-1, XString+StrLen+1, YString+3);
+        set_tile_string(g->BGMap, XString, YString, Str);
+        set_tile_string(g->BGMap, XString, YString+1, "NO");
+        set_tile_string(g->BGMap, XString+StrLen-3, YString+1, "YES");
         
         SetData.ChoiceY = YString+2;
         SetData.ChoiceX = XString;
@@ -337,7 +337,7 @@ void update_set_mode_fullscreen_countdown(void) {
     }
     char Buffer[64];
     snprintf(Buffer, ArraySize(Buffer), "KEEP FULLSCREEN? %i", SetData.CountDownFrames/60);
-    set_tile_string(XString, YString, Buffer);
+    set_tile_string(g->BGMap, XString, YString, Buffer);
     
     b32 Confirm = 0;
     if(g->InDown.a) {
