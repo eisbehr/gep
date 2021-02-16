@@ -65,6 +65,9 @@ typedef intptr_t ptr;
 
 #define PI 3.1415926535897f
 
+#define Min(a, b) ((a) < (b) ? (a) : (b))
+#define Max(a, b) ((a) > (b) ? (a) : (b))
+
 #define Clip(From, Value, To) if((Value) > (To)) {(Value) = (To); } else if((Value) < (From)) {(Value) = (From); }
 
 typedef struct {
@@ -114,10 +117,8 @@ typedef struct {
 #define TileSpriteH (NumMemTileSprites/TileSpriteW) // 16
 
 #define TileSpriteMemSize (64*NumMemTileSprites)
-//static u8 TileSpriteMemory[TileSpriteMemSize];
 
 #define ScreenW 32
-#define ScreenW 31
 #define ScreenH 18
 
 #define ScreenPxW (ScreenW*TileSpriteDim)
