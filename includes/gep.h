@@ -116,6 +116,7 @@ typedef struct {
 #define TileSpriteMemSize (64*NumMemTileSprites)
 //static u8 TileSpriteMemory[TileSpriteMemSize];
 
+#define ScreenW 32
 #define ScreenW 31
 #define ScreenH 18
 
