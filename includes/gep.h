@@ -96,10 +96,10 @@ typedef struct {
 static u8 DefaultBorderColor[3] = { 8,40,8 };
 
 typedef struct {
-    int SCX, SCY;
-    int LX, LY;
-    int LXC, LYC;
-    int WX, WY;
+    int SCX, SCY; // Scene X and Y Offset
+    int LX, LY; // X and Y pixel coordinate of screen currently being drawn
+    int LXC, LYC; // X column and Y row to call respective interrupts on
+    int WX, WY; // Window X and Y
 } lcdp;
 
 typedef struct {
