@@ -356,7 +356,7 @@ typedef struct {
     lcdp Lcdp;
     lcd_ctrl Lcdc;
     LX_interrupt_function LXi;
-    LX_interrupt_function LYi;
+    LY_interrupt_function LYi;
 } gep_state;
 
 static gep_state *g;
