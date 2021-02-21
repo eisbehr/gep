@@ -328,12 +328,27 @@ typedef union {
     };
 } palette;
 
+#define HexColorR(Hex) ((u8)(((u32)(Hex))>>16))
+#define HexColorG(Hex) ((u8)(((u32)(Hex))>>8))
+#define HexColorB(Hex) ((u8)(((u32)(Hex))>>0))
+
+#define PaletteHexColorRGB(Palette, ColorIndex, Hex) { \
+(Palette).E[(ColorIndex)*3+0]=HexColorR(Hex); \
+(Palette).E[(ColorIndex)*3+1]=HexColorG(Hex); \
+(Palette).E[(ColorIndex)*3+2]=HexColorB(Hex);}
+
+#define PaletteHexRGB(Palette, Hex0, Hex1, Hex2, Hex3) \
+PaletteHexColorRGB(Palette, 0, Hex0); \
+PaletteHexColorRGB(Palette, 1, Hex1); \
+PaletteHexColorRGB(Palette, 2, Hex2); \
+PaletteHexColorRGB(Palette, 3, Hex3);
+
 static palette PalDefault = {
     .E = {
-        155, 188, 15, // Light
-        139, 172, 15,
-        48, 98, 48, 
-        15, 56, 15, // Dark
+        0xe0, 0xf8, 0xd0, // Light
+        0x88, 0xc0, 0x70,
+        0x34, 0x68, 0x56, 
+        0x08, 0x18, 0x20, // Dark
     },
 };
 

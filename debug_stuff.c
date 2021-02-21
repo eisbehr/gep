@@ -1,4 +1,11 @@
 
+        static u8 _DbgPalNeutral[] = {
+    255,255,255,
+    192,192,192,
+    105,106,106,
+    7,9,9,
+};
+
 void do_debug_stuff(void) {
     if(TileMapDbgMode) {
         enum { TileMapDbgZoom = 3 };
@@ -50,11 +57,13 @@ void do_debug_stuff(void) {
                 int InTileY = y%TileSpriteDim;
                 int TileId = g->BGMap[BGMapW*TileY+TileX];
                 u8 c = g->TileSpriteMemory[(TileId*TileSpriteSize)+InTileY*TileSpriteDim+InTileX];
+                bg_attr Attr = g->BGAttrMap[BGMapW*TileY+TileX];
+                i8 PalIndex = Attr.Palette;
                 u8 *Pix = Line+x*4;
                 Pix[0] = 255; // Alpha
-                Pix[1] = PalDefault.E[c*3+ShadeB]; // Blue
-                Pix[2] = PalDefault.E[c*3+ShadeG]; // Green
-                Pix[3] = PalDefault.E[c*3+ShadeR]; // Red
+                Pix[1] = g->Palettes[PalIndex].E[c*3+ShadeB]; // Blue
+                Pix[2] = g->Palettes[PalIndex].E[c*3+ShadeG]; // Green
+                Pix[3] = g->Palettes[PalIndex].E[c*3+ShadeR]; // Red
             }
         }
         
@@ -210,11 +219,13 @@ void do_debug_stuff(void) {
                 int InTileY = y%TileSpriteDim;
                 int TileId = g->WinMap[BGMapW*TileY+TileX];
                 u8 c = g->TileSpriteMemory[(TileId*TileSpriteSize)+InTileY*TileSpriteDim+InTileX];
+                bg_attr Attr = g->BGAttrMap[BGMapW*TileY+TileX];
+                i8 PalIndex = Attr.Palette;
                 u8 *Pix = Line+x*4;
                 Pix[0] = 255; // Alpha
-                Pix[1] = PalDefault.E[c*3+ShadeB]; // Blue
-                Pix[2] = PalDefault.E[c*3+ShadeG]; // Green
-                Pix[3] = PalDefault.E[c*3+ShadeR]; // Red
+                Pix[1] = g->Palettes[PalIndex].E[c*3+ShadeB]; // Blue
+                Pix[2] = g->Palettes[PalIndex].E[c*3+ShadeG]; // Green
+                Pix[3] = g->Palettes[PalIndex].E[c*3+ShadeR]; // Red
             }
         }
         
@@ -297,9 +308,9 @@ void do_debug_stuff(void) {
                 u8 c = g->TileSpriteMemory[(TileId*TileSpriteSize)+(InTileY*TileSpriteDim+InTileX)];
                 u8 *Pix = Line+x*4;
                 Pix[0] = 255; // Alpha
-                Pix[1] = PalDefault.E[c*3+ShadeB]; // Blue
-                Pix[2] = PalDefault.E[c*3+ShadeG]; // Green
-                Pix[3] = PalDefault.E[c*3+ShadeR]; // Red
+                Pix[1] = _DbgPalNeutral[c*3+ShadeB]; // Blue
+                Pix[2] = _DbgPalNeutral[c*3+ShadeG]; // Green
+                Pix[3] = _DbgPalNeutral[c*3+ShadeR]; // Red
             }
         }
         
