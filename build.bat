@@ -45,7 +45,7 @@ set OPTIMIZATION_LEVEL=-O2
 set DEBUG_OPTIONS=
 set LINKER_DEBUG_OPTIONS =
 )
-cl %INCLUDE_DIR% %MACRO_SWITCHES% %WARNINGS% %OPTIMIZATION_LEVEL% %COMPILER_OPTIONS% %DEBUG_OPTIONS% "%INPUT_DIR%\sdl_win_main.c" -link -incremental:no -subsystem:windows -opt:ref -out:%OUTPUT_FILE% %LINKER_DEBUG_OPTIONS% SDL2.lib SDL2main.lib User32.lib || goto :error
+cl %INCLUDE_DIR% %MACRO_SWITCHES% %WARNINGS% %OPTIMIZATION_LEVEL% %COMPILER_OPTIONS% %DEBUG_OPTIONS% "%INPUT_DIR%\sdl_win_main.c" SDL2.lib SDL2main.lib User32.lib -link -incremental:no -subsystem:windows -opt:ref -out:%OUTPUT_FILE% %LINKER_DEBUG_OPTIONS% || goto :error
 
 popd || goto :error
 popd || goto :error
