@@ -337,9 +337,9 @@ void run_mode_score(void) {
         int XMax = XMin+2+max(StrLen, StrLen2);
         int YMin = YScore-1;
         int YMax = YPlayAgain+2;
-        set_tile_text_box(XMin, YMin, XMax, YMax);
-        set_tile_string(XScore, YScore, TmpStrBuffer);
-        set_tile_string(XPlayAgain, YPlayAgain, PlayAgainStr);
+        set_tile_text_box(g->BGMap, XMin, YMin, XMax, YMax);
+        set_tile_string(g->BGMap,XScore, YScore, TmpStrBuffer);
+        set_tile_string(g->BGMap,XPlayAgain, YPlayAgain, PlayAgainStr);
         map_set_rect_attr(g->BGAttrMap, XMin, YMin, XMax, YMax, (bg_attr){0});
     }
     
