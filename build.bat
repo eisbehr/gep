@@ -24,7 +24,7 @@ mkdir atlas_include || goto :mkdirerror
 )
 
 pushd art || goto :error
-..\tools\packer\bin\packer.exe settings_atlas.pcx SettingsAtlas ..\atlas_include\settings_atlas.h
+..\tools\packer\bin\packer.exe pcx settings_atlas.pcx SettingsAtlas ..\atlas_include\settings_atlas.h || goto :error
 popd || goto :error
 
 pushd bin || goto :error

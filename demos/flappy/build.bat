@@ -20,7 +20,7 @@ mkdir atlas_include || goto :mkdirerror
 )
 
 pushd art || goto :error
-..\..\..\tools\packer\bin\packer.exe atlas.pcx Atlas ..\atlas_include\atlas.h
+..\..\..\tools\packer\bin\packer.exe pcx atlas.pcx Atlas ..\atlas_include\atlas.h
 popd || goto :error
 
 pushd bin || goto :error

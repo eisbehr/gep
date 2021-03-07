@@ -55,6 +55,8 @@ typedef intptr_t ptr;
 #define Megabytes(size) Kilobytes((ptr)size*1024)
 #define Gigabytes(size) Megabytes((ptr)size*1024)
 
+#include "csv_parser.c"
+
 typedef union {
     struct {
         u8 BackgroundColor;
@@ -84,16 +86,31 @@ typedef struct {
     u8 Filler[58];
 } pcx_hdr;
 
+typedef enum {
+    mode_none,
+    mode_pcx,
+    mode_csv,
+} packer_mode;
+
 int main(int argc, char **argv) {
     
-    if(argc < 4) {
-        printf("Usage: [input.pcx file] [variable name] [output.h file ]");
-        return 0;
+    if(argc < 5) {
+        usage:
+        printf("Usage: [pcx|csv] [input file] [variable name] [output.h file]\npcx mode is meant for tile-sprite-memory maps, csv mode is meant \nfor loading maps from the 'Tiled' tile map editor. Choose one of \nthose options as the first argument, then supply all of the other \narguments\n");
+        return 1;
     }
     
-    char *InputFileStr = argv[1];
-    char *VarNameStr = argv[2];
-    char *OutputFileStr = argv[3];
+    packer_mode Mode = 0;
+    if(strcmp(argv[1], "pcx") == 0) Mode = mode_pcx;
+    else if(strcmp(argv[1], "csv") == 0) Mode = mode_csv;
+    else {
+        printf("Unknown filetype selected '%s'\n\n", argv[1]);
+        goto usage;
+    }
+    
+    char *InputFileStr = argv[2];
+    char *VarNameStr = argv[3];
+    char *OutputFileStr = argv[4];
     
     FILE *File = fopen(InputFileStr, "rb");
     if(!File) {
@@ -113,7 +130,7 @@ int main(int argc, char **argv) {
         return 1;
     }
     
-    u8 *Buffer = malloc(FileSize);
+    u8 *Buffer = malloc(FileSize);  // intentional leak, program lifetime
     if(!Buffer) {
         printf("Failed to alloc buffer\n");
         return 1;
@@ -124,104 +141,172 @@ int main(int argc, char **argv) {
         return 1;
     }
     
-    pcx_hdr *Hdr = (pcx_hdr *)Buffer;
-    u8 *RLE = (u8 *)(Hdr+1);
-    
-    int w = Hdr->Xmax+1;
-    int h = Hdr->Ymax+1;
-    u8 *Img = malloc(w*h);
-    if(!Img) {
-        printf("Failed to alloc img\n");
-        return 1;
-    }
-    
-    {
-        int TileW = w/8;
-        int TileMemSize = 8*8;
-        
-        int x = 0;
-        int y = 0;
-        int i = 0;
-        while(y < h) {
-            int ScanBegini = i;
-            while(x < w) {
-                u8 RunLength = 1;
-                if(RLE[i] >= 0xC0) {
-                    RunLength = RLE[i++]-0xC0;
-                }
-                u8 Index = RLE[i++];
-                int TileY = y/8;
-                int InTileY = y%8;
-                pforj(RunLength) {
-                    int TileX = x/8;
-                    int InTileX = x%8;
-                    Img[(TileY*TileW+TileX)*TileMemSize+(InTileY*8+InTileX)] = Index;
-                    x++;
+    switch(Mode) {
+        case mode_pcx: {
+            pcx_hdr *Hdr = (pcx_hdr *)Buffer;
+            u8 *RLE = (u8 *)(Hdr+1);
+            
+            int w = Hdr->Xmax+1;
+            int h = Hdr->Ymax+1;
+            u8 *Img = malloc(w*h); // intentional leak, program lifetime
+            if(!Img) {
+                printf("Failed to alloc img\n");
+                return 1;
+            }
+            
+            {
+                int TileW = w/8;
+                int TileMemSize = 8*8;
+                
+                int x = 0;
+                int y = 0;
+                int i = 0;
+                while(y < h) {
+                    int ScanBegini = i;
+                    while(x < w) {
+                        u8 RunLength = 1;
+                        if(RLE[i] >= 0xC0) {
+                            RunLength = RLE[i++]-0xC0;
+                        }
+                        u8 Index = RLE[i++];
+                        int TileY = y/8;
+                        int InTileY = y%8;
+                        pforj(RunLength) {
+                            int TileX = x/8;
+                            int InTileX = x%8;
+                            Img[(TileY*TileW+TileX)*TileMemSize+(InTileY*8+InTileX)] = Index;
+                            x++;
+                        }
+                    }
+                    y++;
+                    x=0;
                 }
             }
-            y++;
-            x=0;
+            
+            const char HdrBegin1[] = "// image atlas for gep -- ";
+            const char HdrBegin2[] = "\nstatic const u8 ";
+            const char HdrBegin3[] = "[] = {";
+            i64 InputFileStrSize = strlen(InputFileStr);
+            i64 VarNameStrSize = strlen(VarNameStr);
+            i64 HdrBeginSize = ArraySize(HdrBegin1)-1+ArraySize(HdrBegin2)-1+ArraySize(HdrBegin3)-1+InputFileStrSize+VarNameStrSize;
+            const char HdrEnd[] = "};\n";
+            i64 ImgLen = w*h;
+            u64 ImgHdrSize = HdrBeginSize + ArraySize(HdrEnd)-1 + ImgLen*6;
+            char *ImgHdr = malloc(ImgHdrSize);  // intentional leak, program lifetime
+            if(!ImgHdr) {
+                printf("Failed to alloc img\n");
+                return 1;
+            }
+            
+            memcpy(ImgHdr, HdrBegin1, ArraySize(HdrBegin1)-1);
+            i64 ImgHdrOffset = ArraySize(HdrBegin1)-1;
+            memcpy(ImgHdr+ImgHdrOffset, InputFileStr, InputFileStrSize);
+            ImgHdrOffset+= InputFileStrSize;
+            memcpy(ImgHdr+ImgHdrOffset, HdrBegin2, ArraySize(HdrBegin2)-1);
+            ImgHdrOffset+= ArraySize(HdrBegin2)-1;
+            memcpy(ImgHdr+ImgHdrOffset, VarNameStr, VarNameStrSize);
+            ImgHdrOffset+= VarNameStrSize;
+            memcpy(ImgHdr+ImgHdrOffset, HdrBegin3, ArraySize(HdrBegin3)-1);
+            ImgHdrOffset+= ArraySize(HdrBegin3)-1;
+            
+            static const char HexLookup[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+            const char ItemTemplate[] = "0xCC, ";
+            i64 ItemTemplateLen = ArraySize(ItemTemplate)-1;
+            pfori(ImgLen) {
+                i64 Pos = ImgHdrOffset+i*ItemTemplateLen;
+                memcpy(ImgHdr+Pos, ItemTemplate, ItemTemplateLen);
+                ImgHdr[Pos+2] = HexLookup[(Img[i]&0xF0)>>4];
+                ImgHdr[Pos+3] = HexLookup[Img[i]&0x0F];
+            }
+            ImgHdrOffset += ImgLen*6;
+            memcpy(ImgHdr+ImgHdrOffset, HdrEnd, ArraySize(HdrEnd)-1);
+            FILE *OutFile = fopen(OutputFileStr, "wb");
+            if(!OutFile) {
+                printf("Failed to open out file \n");
+                return 1;
+            }
+            
+            if(fwrite(ImgHdr, 1, ImgHdrSize, OutFile) != ImgHdrSize) {
+                printf("Failed to write out file\n");
+                return 1;
+            }
+            
+            if(fflush(OutFile)) {
+                printf("Failed to fflush out file\n");
+                return 1;
+            }
+            if(fclose(OutFile)) {
+                printf("Failed to close out file\n");
+                return 1;
+            }
+            printf("Atlas pack success!\n");
+        } break;
+        case mode_csv: {
+            map Map = parse_csv((char *)Buffer, FileSize);
+            FILE *OutFile = fopen(OutputFileStr, "wb");
+            if(!OutFile) {
+                printf("Failed to open out file \n");
+                return 1;
+            }
+            
+            const char Hdr1[] = "// Tilemap for gep\n";
+            if(fprintf(OutFile, Hdr1) != ArrayLength(Hdr1)-1) {
+                printf("Failed to write hdr1\n");
+                exit(1);
+            }
+            
+            const char DefineStr[] = "#define %s_Width %i\n#define %s_Height %i\n";
+            i64 PrintSize = snprintf(0, 0, DefineStr, VarNameStr, Map.Width, VarNameStr, Map.Height);
+            if(fprintf(OutFile, DefineStr, VarNameStr, Map.Width, VarNameStr, Map.Height) != PrintSize) {
+                printf("Failed to write hdr2\n");
+                exit(1);
+            }
+            
+            const char Hdr2[] = "static const i64 %s[] = { \n";
+            PrintSize = snprintf(0, 0, Hdr2, VarNameStr);
+            if(fprintf(OutFile, Hdr2, VarNameStr) != PrintSize) {
+                printf("Failed to write hdr2\n");
+                exit(1);
+            }
+            
+            i64 NumTotal = Map.Width*Map.Height;
+            pfory(Map.Height) {
+                pforx(Map.Width) {
+                    const char ValStr[] = "%lli, ";
+                    PrintSize = snprintf(0, 0, ValStr, Map.Data[Map.Width*y+x]);
+                    if(fprintf(OutFile, ValStr, Map.Data[Map.Width*y+x]) != PrintSize) {
+                        printf("Failed to write val #%lli\n", Map.Width*y+x);
+                        exit(1);
+                    }
+                }
+                if(fprintf(OutFile, "\n") != 1) {
+                    printf("Failed to write value newline\n");
+                    exit(1);
+                }
+            }
+            
+            const char Tail[] = "};\n";
+            PrintSize = snprintf(0, 0, Tail);
+            if(fprintf(OutFile, Tail) != PrintSize) {
+                printf("Failed to write Tail\n");
+                exit(1);
+            }
+            
+            if(fflush(OutFile)) {
+                printf("Failed to fflush out file\n");
+                return 1;
+            }
+            if(fclose(OutFile)) {
+                printf("Failed to close out file\n");
+                return 1;
+            }
+            printf("Map pack success!\n");
+        } break;
+        default: {
+            printf("given unhandled file mode\n");
+            return 1;
         }
     }
-    
-    const char HdrBegin1[] = "// image atlas for gep -- ";
-    const char HdrBegin2[] = "\nstatic const u8 ";
-    const char HdrBegin3[] = "[] = {";
-    i64 InputFileStrSize = strlen(InputFileStr);
-    i64 VarNameStrSize = strlen(VarNameStr);
-    i64 HdrBeginSize = ArraySize(HdrBegin1)-1+ArraySize(HdrBegin2)-1+ArraySize(HdrBegin3)-1+InputFileStrSize+VarNameStrSize;
-    const char HdrEnd[] = "};\n";
-    i64 ImgLen = w*h;
-    u64 ImgHdrSize = HdrBeginSize + ArraySize(HdrEnd)-1 + ImgLen*6;
-    char *ImgHdr = malloc(ImgHdrSize);
-    if(!ImgHdr) {
-        printf("Failed to alloc img\n");
-        return 1;
-    }
-    
-    memcpy(ImgHdr, HdrBegin1, ArraySize(HdrBegin1)-1);
-    i64 ImgHdrOffset = ArraySize(HdrBegin1)-1;
-    memcpy(ImgHdr+ImgHdrOffset, InputFileStr, InputFileStrSize);
-    ImgHdrOffset+= InputFileStrSize;
-    memcpy(ImgHdr+ImgHdrOffset, HdrBegin2, ArraySize(HdrBegin2)-1);
-    ImgHdrOffset+= ArraySize(HdrBegin2)-1;
-    memcpy(ImgHdr+ImgHdrOffset, VarNameStr, VarNameStrSize);
-    ImgHdrOffset+= VarNameStrSize;
-    memcpy(ImgHdr+ImgHdrOffset, HdrBegin3, ArraySize(HdrBegin3)-1);
-    ImgHdrOffset+= ArraySize(HdrBegin3)-1;
-    
-    static const char HexLookup[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
-    const char ItemTemplate[] = "0xCC, ";
-    i64 ItemTemplateLen = ArraySize(ItemTemplate)-1;
-    pfori(ImgLen) {
-        i64 Pos = ImgHdrOffset+i*ItemTemplateLen;
-        memcpy(ImgHdr+Pos, ItemTemplate, ItemTemplateLen);
-        ImgHdr[Pos+2] = HexLookup[(Img[i]&0xF0)>>4];
-        ImgHdr[Pos+3] = HexLookup[Img[i]&0x0F];
-    }
-    ImgHdrOffset += ImgLen*6;
-    memcpy(ImgHdr+ImgHdrOffset, HdrEnd, ArraySize(HdrEnd)-1);
-    FILE *OutFile = fopen(OutputFileStr, "wb");
-    if(!OutFile) {
-        printf("Failed to open out file \n");
-        return 1;
-    }
-    
-    if(fwrite(ImgHdr, 1, ImgHdrSize, OutFile) != ImgHdrSize) {
-        printf("Failed to write out file\n");
-        return 1;
-    }
-    
-    if(fflush(OutFile)) {
-        printf("Failed to fsync out file\n");
-        return 1;
-    }
-    if(fclose(OutFile)) {
-        printf("Failed to close out file\n");
-        return 1;
-    }
-    
-    printf("Atlas pack success!\n");
     
     return 0;
 }
