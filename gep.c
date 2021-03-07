@@ -674,22 +674,6 @@ void gep_update(void) {
     }
     Assert(Pitch == (ScreenPxW*4));
     memcpy(Pixels, ScreenBuffer, ScreenPxW*ScreenPxH*4);
-#if 0    
-    BeforePalApply = SDL_GetPerformanceCounter();
-    pfori(ScreenPxH) {
-        u8* SSLine = ((u8 *)Pixels)+(Pitch*i);
-        pforj(ScreenPxW) {
-            u8 c = ScreenBuffer[ScreenPxW*i+j];
-            u8 *SSPix = SSLine+j*4;
-            SSPix[0] = 255; // Alpha
-            SSPix[1] = Shades[c*3+ShadeB]; // Blue
-            SSPix[2] = Shades[c*3+ShadeG]; // Green
-            SSPix[3] = Shades[c*3+ShadeR]; // Red
-            
-        }
-    }
-    AfterPalApply = SDL_GetPerformanceCounter();
-#endif
     
     SDL_UnlockTexture(ScreenTex);
     AfterLock = SDL_GetPerformanceCounter();
