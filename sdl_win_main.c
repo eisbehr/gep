@@ -280,12 +280,12 @@ int main(int argc, char** argv) {
                         SDL_WindowEvent *e = (SDL_WindowEvent *)&ev;
                         switch(e->event) {
                             case SDL_WINDOWEVENT_CLOSE: {
-                                if(e->windowID == SDL_GetWindowID(TileMapDbgWindow)) {
-                                    TileMapDbgMode = 0;
-                                } else if(e->windowID == SDL_GetWindowID(WindowMapDbgWindow)) {
-                                    WindowMapDbgMode = 0;
-                                } else if(e->windowID == SDL_GetWindowID(TileSpriteMemDbgWindow)) {
-                                    TileSpriteMemDbgMode = 0;
+                                if(e->windowID == SDL_GetWindowID(TileMapDevWindow)) {
+                                    TileMapDevMode = 0;
+                                } else if(e->windowID == SDL_GetWindowID(WindowMapDevWindow)) {
+                                    WindowMapDevMode = 0;
+                                } else if(e->windowID == SDL_GetWindowID(TileSpriteMemDevWindow)) {
+                                    TileSpriteMemDevMode = 0;
                                 }
                             } break;
                         }
@@ -293,11 +293,11 @@ int main(int argc, char** argv) {
                     case SDL_MOUSEMOTION: {
                         SDL_MouseMotionEvent *e = (SDL_MouseMotionEvent *)&ev;
                         devinput *d = &DevInput;
-                        if(e->windowID == SDL_GetWindowID(TileMapDbgWindow)) {
+                        if(e->windowID == SDL_GetWindowID(TileMapDevWindow)) {
                             d = &TileMapDevInput;
-                        } else if(e->windowID == SDL_GetWindowID(WindowMapDbgWindow)) {
+                        } else if(e->windowID == SDL_GetWindowID(WindowMapDevWindow)) {
                             d = &WindowMapDevInput;
-                        } else if(e->windowID == SDL_GetWindowID(TileSpriteMemDbgWindow)) {
+                        } else if(e->windowID == SDL_GetWindowID(TileSpriteMemDevWindow)) {
                             d = &TileSpriteDevInput;
                         }
                         f32 ex = (f32)e->x;
@@ -308,11 +308,11 @@ int main(int argc, char** argv) {
                     case SDL_MOUSEBUTTONDOWN: {
                         SDL_MouseButtonEvent *e = (SDL_MouseButtonEvent *)&ev;
                         devinput *d = &DevInput;
-                        if(e->windowID == SDL_GetWindowID(TileMapDbgWindow)) {
+                        if(e->windowID == SDL_GetWindowID(TileMapDevWindow)) {
                             d = &TileMapDevInput;
-                        } else if(e->windowID == SDL_GetWindowID(WindowMapDbgWindow)) {
+                        } else if(e->windowID == SDL_GetWindowID(WindowMapDevWindow)) {
                             d = &WindowMapDevInput;
-                        } else if(e->windowID == SDL_GetWindowID(TileSpriteMemDbgWindow)) {
+                        } else if(e->windowID == SDL_GetWindowID(TileSpriteMemDevWindow)) {
                             d = &TileSpriteDevInput;
                         }
                         
@@ -331,11 +331,11 @@ int main(int argc, char** argv) {
                     case SDL_MOUSEBUTTONUP: {
                         SDL_MouseButtonEvent *e = (SDL_MouseButtonEvent *)&ev;
                         devinput *d = &DevInput;
-                        if(e->windowID == SDL_GetWindowID(TileMapDbgWindow)) {
+                        if(e->windowID == SDL_GetWindowID(TileMapDevWindow)) {
                             d = &TileMapDevInput;
-                        } else if(e->windowID == SDL_GetWindowID(WindowMapDbgWindow)) {
+                        } else if(e->windowID == SDL_GetWindowID(WindowMapDevWindow)) {
                             d = &WindowMapDevInput;
-                        } else if(e->windowID == SDL_GetWindowID(TileSpriteMemDbgWindow)) {
+                        } else if(e->windowID == SDL_GetWindowID(TileSpriteMemDevWindow)) {
                             d = &TileSpriteDevInput;
                         }
                         
@@ -354,11 +354,11 @@ int main(int argc, char** argv) {
                     case SDL_MOUSEWHEEL: {
                         SDL_MouseWheelEvent *e = (SDL_MouseWheelEvent *)&ev;
                         devinput *d = &DevInput;
-                        if(e->windowID == SDL_GetWindowID(TileMapDbgWindow)) {
+                        if(e->windowID == SDL_GetWindowID(TileMapDevWindow)) {
                             d = &TileMapDevInput;
-                        } else if(e->windowID == SDL_GetWindowID(WindowMapDbgWindow)) {
+                        } else if(e->windowID == SDL_GetWindowID(WindowMapDevWindow)) {
                             d = &WindowMapDevInput;
-                        } else if(e->windowID == SDL_GetWindowID(TileSpriteMemDbgWindow)) {
+                        } else if(e->windowID == SDL_GetWindowID(TileSpriteMemDevWindow)) {
                             d = &TileSpriteDevInput;
                         }
                         
@@ -431,22 +431,22 @@ int main(int argc, char** argv) {
                                 ToggleSettings = 1;
                             } break;
                             case SDL_SCANCODE_F9: {
-                                TileMapDbgMode = !TileMapDbgMode;
+                                TileMapDevMode = !TileMapDevMode;
                             } break;
                             case SDL_SCANCODE_F10: {
-                                WindowMapDbgMode = !WindowMapDbgMode;
+                                WindowMapDevMode = !WindowMapDevMode;
                             } break;
                             case SDL_SCANCODE_F11: {
-                                TileSpriteMemDbgMode = !TileSpriteMemDbgMode;
+                                TileSpriteMemDevMode = !TileSpriteMemDevMode;
                             } break;
                             
                             case SDL_SCANCODE_LCTRL: {
                                 devinput *d = &DevInput;
-                                if(e->windowID == SDL_GetWindowID(TileMapDbgWindow)) {
+                                if(e->windowID == SDL_GetWindowID(TileMapDevWindow)) {
                                     d = &TileMapDevInput;
-                                } else if(e->windowID == SDL_GetWindowID(WindowMapDbgWindow)) {
+                                } else if(e->windowID == SDL_GetWindowID(WindowMapDevWindow)) {
                                     d = &WindowMapDevInput;
-                                } else if(e->windowID == SDL_GetWindowID(TileSpriteMemDbgWindow)) {
+                                } else if(e->windowID == SDL_GetWindowID(TileSpriteMemDevWindow)) {
                                     d = &TileSpriteDevInput;
                                 }
                                 d->ctrl = 1;
@@ -518,11 +518,11 @@ int main(int argc, char** argv) {
                             } break;
                             case SDL_SCANCODE_LCTRL: {
                                 devinput *d = &DevInput;
-                                if(e->windowID == SDL_GetWindowID(TileMapDbgWindow)) {
+                                if(e->windowID == SDL_GetWindowID(TileMapDevWindow)) {
                                     d = &TileMapDevInput;
-                                } else if(e->windowID == SDL_GetWindowID(WindowMapDbgWindow)) {
+                                } else if(e->windowID == SDL_GetWindowID(WindowMapDevWindow)) {
                                     d = &WindowMapDevInput;
-                                } else if(e->windowID == SDL_GetWindowID(TileSpriteMemDbgWindow)) {
+                                } else if(e->windowID == SDL_GetWindowID(TileSpriteMemDevWindow)) {
                                     d = &TileSpriteDevInput;
                                 }
                                 d->ctrl = 0;

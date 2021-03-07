@@ -331,7 +331,7 @@ void input_begin_frame_reset(void) {
     g->InDown = (gepinput){0};
 }
 
-#include "debug_stuff.c"
+#include "developer_tools.c"
 
 void gep_update(void) {
     // Clip input struct values
@@ -694,7 +694,7 @@ void gep_update(void) {
     SDL_UnlockTexture(ScreenTex);
     AfterLock = SDL_GetPerformanceCounter();
     
-    do_debug_stuff();
+    update_developer_tools();
 }
 
 void gep_present(void) {
