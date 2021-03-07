@@ -116,6 +116,9 @@ typedef struct {
 #define TileSpriteW 32
 #define TileSpriteH (NumMemTileSprites/TileSpriteW) // 16
 
+#define TileSpritePxW (TileSpriteW*TileSpriteDim)
+#define TileSpritePxH (TileSpriteH*TileSpriteDim)
+
 #define TileSpriteMemSize (64*NumMemTileSprites)
 
 #define ScreenW 32
@@ -128,8 +131,8 @@ typedef struct {
 #define BGMapW 64
 #define BGMapH 32
 
-#define BGMapPxW (BGMapW*8)
-#define BGMapPxH (BGMapH*8)
+#define BGMapPxW (BGMapW*TileSpriteDim)
+#define BGMapPxH (BGMapH*TileSpriteDim)
 
 #define ShadeR 0
 #define ShadeG 1

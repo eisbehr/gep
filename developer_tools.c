@@ -6,39 +6,50 @@
     7,9,9,
 };
 
+void create_devtool_window(const char *WindowTitle, int Width, int Height, int Zoom, SDL_Window **WindowOut, SDL_Renderer **RendererOut, SDL_Texture **TextureOut) {
+    *WindowOut = SDL_CreateWindow(WindowTitle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Width*Zoom, Height*Zoom, 0);
+    if(!*WindowOut) {
+        SDL_LogError(0, "Failed to create window '%s': %s", WindowTitle, SDL_GetError());
+        exit(1);
+    }
+    
+    *RendererOut = SDL_CreateRenderer(*WindowOut,
+                                      DbgOpenGlDriver,
+                                      SDL_RENDERER_ACCELERATED);
+    if(!*RendererOut) {
+        SDL_LogError(0, "Failed to create renderer for window '%s': %s", WindowTitle, SDL_GetError());
+        exit(1);
+    }
+    
+    SDL_RendererInfo TileMapDevInfo = {0};
+    if(SDL_GetRendererInfo(*RendererOut, &TileMapDevInfo)) {
+        SDL_LogError(0, "Failed to query renderer info for window '%s': %s", WindowTitle, SDL_GetError());
+        exit(1);
+    }
+    SDL_LogInfo(0, "TileMapDev Renderer: %s", TileMapDevInfo.name);
+    
+    *TextureOut = SDL_CreateTexture(*RendererOut, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 
+                                    Width, Height);
+    if(!*TextureOut) {
+        SDL_LogError(0, "Failed to create screen texture or window '%s': %s", WindowTitle, SDL_GetError());
+        exit(1);
+    }
+}
+
+void destroy_devtool_window(SDL_Window **DevWindow, SDL_Renderer **DevRenderer, SDL_Texture **DevTexture) {
+    SDL_DestroyRenderer(*DevRenderer);
+    *DevRenderer = 0;
+    SDL_DestroyTexture(*DevTexture);
+    *DevTexture = 0;
+    SDL_DestroyWindow(*DevWindow);
+    *DevWindow = 0;
+}
+
 void update_developer_tools(void) {
     if(TileMapDevMode) {
         enum { TileMapDevZoom = 3 };
         if(!TileMapDevWindow) {
-            int TileMapDevWindowW = BGMapPxW*TileMapDevZoom;
-            int TileMapDevWindowH = BGMapPxH*TileMapDevZoom;
-            TileMapDevWindow = SDL_CreateWindow("GameEngine pocket TileMapDev", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TileMapDevWindowW, TileMapDevWindowH, 0);
-            if(!TileMapDevWindow) {
-                SDL_LogError(0, "Failed to create window: %s", SDL_GetError());
-                exit(1);
-            }
-            
-            TileMapDevRenderer = SDL_CreateRenderer(TileMapDevWindow,
-                                                    DbgOpenGlDriver,
-                                                    SDL_RENDERER_ACCELERATED);
-            if(!TileMapDevRenderer) {
-                SDL_LogError(0, "Failed to create renderer: %s", SDL_GetError());
-                exit(1);
-            }
-            
-            SDL_RendererInfo TileMapDevInfo = {0};
-            if(SDL_GetRendererInfo(TileMapDevRenderer, &TileMapDevInfo)) {
-                SDL_LogError(0, "Failed to query renderer info: %s", SDL_GetError());
-                exit(1);
-            }
-            SDL_LogInfo(0, "TileMapDev Renderer: %s", TileMapDevInfo.name);
-            
-            TileMapDevTexture = SDL_CreateTexture(TileMapDevRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 
-                                                  TileMapDevWindowW/TileMapDevZoom, TileMapDevWindowH/TileMapDevZoom);
-            if(!TileMapDevTexture ) {
-                SDL_LogError(0, "Failed to create screen texture: %s", SDL_GetError());
-                exit(1);
-            }
+            create_devtool_window("GameEngine pocket TileMapDev", BGMapPxW, BGMapPxH, TileMapDevZoom, &TileMapDevWindow, &TileMapDevRenderer, &TileMapDevTexture);
         }
         
         void *Pixels;
@@ -160,47 +171,14 @@ void update_developer_tools(void) {
         SDL_RenderPresent(TileMapDevRenderer);
     } else {
         if(TileMapDevWindow) {
-            SDL_DestroyRenderer(TileMapDevRenderer);
-            TileMapDevRenderer = 0;
-            SDL_DestroyTexture(TileMapDevTexture);
-            TileMapDevTexture = 0;
-            SDL_DestroyWindow(TileMapDevWindow);
-            TileMapDevWindow = 0;
+            destroy_devtool_window(&TileMapDevWindow, &TileMapDevRenderer, &TileMapDevTexture);
         }
     }
     
     if(WindowMapDevMode) {
         enum { WindowMapDevZoom = 3 };
         if(!WindowMapDevWindow) {
-            int WindowMapDevWindowW = BGMapPxW*WindowMapDevZoom;
-            int WindowMapDevWindowH = BGMapPxH*WindowMapDevZoom;
-            WindowMapDevWindow = SDL_CreateWindow("GameEngine pocket WindowMapDev", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WindowMapDevWindowW, WindowMapDevWindowH, 0);
-            if(!WindowMapDevWindow) {
-                SDL_LogError(0, "Failed to create window: %s", SDL_GetError());
-                exit(1);
-            }
-            
-            WindowMapDevRenderer = SDL_CreateRenderer(WindowMapDevWindow,
-                                                      DbgOpenGlDriver,
-                                                      SDL_RENDERER_ACCELERATED);
-            if(!WindowMapDevRenderer) {
-                SDL_LogError(0, "Failed to create renderer: %s", SDL_GetError());
-                exit(1);
-            }
-            
-            SDL_RendererInfo WindowMapDevInfo = {0};
-            if(SDL_GetRendererInfo(WindowMapDevRenderer, &WindowMapDevInfo)) {
-                SDL_LogError(0, "Failed to query renderer info: %s", SDL_GetError());
-                exit(1);
-            }
-            SDL_LogInfo(0, "WindowMapDev Renderer: %s", WindowMapDevInfo.name);
-            
-            WindowMapDevTexture = SDL_CreateTexture(WindowMapDevRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 
-                                                    WindowMapDevWindowW/WindowMapDevZoom, WindowMapDevWindowH/WindowMapDevZoom);
-            if(!WindowMapDevTexture ) {
-                SDL_LogError(0, "Failed to create screen texture: %s", SDL_GetError());
-                exit(1);
-            }
+            create_devtool_window("GameEngine pocket WindowMapDev", BGMapPxW, BGMapPxH, WindowMapDevZoom, &WindowMapDevWindow, &WindowMapDevRenderer, &WindowMapDevTexture);
         }
         
         void *Pixels;
@@ -243,53 +221,16 @@ void update_developer_tools(void) {
         SDL_RenderPresent(WindowMapDevRenderer);
     } else {
         if(WindowMapDevWindow) {
-            SDL_DestroyRenderer(WindowMapDevRenderer);
-            WindowMapDevRenderer = 0;
-            SDL_DestroyTexture(WindowMapDevTexture);
-            WindowMapDevTexture = 0;
-            SDL_DestroyWindow(WindowMapDevWindow);
-            WindowMapDevWindow = 0;
+            destroy_devtool_window(&WindowMapDevWindow, &WindowMapDevRenderer, &WindowMapDevTexture);
         }
     }
     
     if(TileSpriteMemDevMode) {
         enum { TileSpriteMemDevZoom = 5 };
-        int TileSpriteWPx = TileSpriteW*TileSpriteDim;
-        int TileSpriteHPx = TileSpriteH*TileSpriteDim;
-        int TileSpriteMemDevWindowW = TileSpriteWPx*TileSpriteMemDevZoom;
-        int TileSpriteMemDevWindowH = TileSpriteHPx*TileSpriteMemDevZoom;
-        
         const char WindowTitle[] = "GameEngine pocket TileSpriteMemDev";
         if(!TileSpriteMemDevWindow) {
-            TileSpriteMemDevWindow = SDL_CreateWindow(WindowTitle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TileSpriteMemDevWindowW, TileSpriteMemDevWindowH, 0);
-            if(!TileSpriteMemDevWindow) {
-                SDL_LogError(0, "Failed to create window: %s", SDL_GetError());
-                exit(1);
-            }
-            
-            TileSpriteMemDevRenderer = SDL_CreateRenderer(TileSpriteMemDevWindow,
-                                                          DbgOpenGlDriver,
-                                                          SDL_RENDERER_ACCELERATED);
-            if(!TileSpriteMemDevRenderer) {
-                SDL_LogError(0, "Failed to create renderer: %s", SDL_GetError());
-                exit(1);
-            }
-            
-            SDL_RendererInfo TileSpriteMemDevInfo = {0};
-            if(SDL_GetRendererInfo(TileSpriteMemDevRenderer, &TileSpriteMemDevInfo)) {
-                SDL_LogError(0, "Failed to query renderer info: %s", SDL_GetError());
-                exit(1);
-            }
-            SDL_LogInfo(0, "TileSpriteMemDev Renderer: %s", TileSpriteMemDevInfo.name);
-            
-            TileSpriteMemDevTexture = SDL_CreateTexture(TileSpriteMemDevRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 
-                                                        TileSpriteMemDevWindowW/TileSpriteMemDevZoom, TileSpriteMemDevWindowH/TileSpriteMemDevZoom);
-            if(!TileSpriteMemDevTexture ) {
-                SDL_LogError(0, "Failed to create screen texture: %s", SDL_GetError());
-                exit(1);
-            }
+            create_devtool_window("GameEngine pocket TileSpriteMemDev", TileSpritePxW, TileSpritePxH, TileSpriteMemDevZoom, &TileSpriteMemDevWindow, &TileSpriteMemDevRenderer, &TileSpriteMemDevTexture);
         }
-        
         void *Pixels;
         int Pitch;
         if(SDL_LockTexture(TileSpriteMemDevTexture, 0, &Pixels, &Pitch)) {
@@ -297,9 +238,9 @@ void update_developer_tools(void) {
             exit(1);
         }
         
-        pfory32(TileSpriteHPx) {
+        pfory32(TileSpritePxH) {
             u8 *Line = ((u8 *)Pixels)+(Pitch*y);
-            pforx32(TileSpriteWPx) {
+            pforx32(TileSpritePxW) {
                 int TileX = x/TileSpriteDim;
                 int TileY = y/TileSpriteDim;
                 int InTileX = x%TileSpriteDim;
@@ -323,7 +264,7 @@ void update_developer_tools(void) {
         
         for(int x=1; x<TileSpriteW; x++) {
             if(SDL_RenderDrawLine(TileSpriteMemDevRenderer, x*TileSpriteDim*TileSpriteMemDevZoom,0,
-                                  x*TileSpriteDim*TileSpriteMemDevZoom, TileSpriteHPx*TileSpriteMemDevZoom)) {
+                                  x*TileSpriteDim*TileSpriteMemDevZoom, TileSpritePxH*TileSpriteMemDevZoom)) {
                 SDL_LogError(0, "Failed to draw TileSpriteMem dbg line: %s", SDL_GetError());
                 exit(1);
             }
@@ -331,7 +272,7 @@ void update_developer_tools(void) {
         
         for(int y=1; y<TileSpriteH; y++){
             if(SDL_RenderDrawLine(TileSpriteMemDevRenderer, 0,y*TileSpriteDim*TileSpriteMemDevZoom,
-                                  TileSpriteWPx*TileSpriteMemDevZoom, y*TileSpriteDim*TileSpriteMemDevZoom)) {
+                                  TileSpritePxW*TileSpriteMemDevZoom, y*TileSpriteDim*TileSpriteMemDevZoom)) {
                 SDL_LogError(0, "Failed to draw TileSpriteMem dbg line: %s", SDL_GetError());
                 exit(1);
             }
