@@ -222,6 +222,20 @@ b32 map_set_rect16(u16 *Map, int MinX, int MinY, int MaxX, int MaxY, u16 Val) {
     return 1;
 }
 
+b32 map_copy_rect16(u16 *Dst, int DX, int DY, const u16 *Src, int SWidth, int SHeight, int SMinX, int SMinY, int SMaxX, int SMaxY) {
+    if(DX < 0 || DY < 0 || SMinX > SMaxX || SMinY > SMaxY || SMaxX>SWidth || SMaxY>SHeight) return 0;
+    
+    int Width = SMaxX-SMinX;
+    int Height = SMaxY-SMinY;
+    pfory32(Height) {
+        pforx32(Width) {
+            u16 Val = Src[SWidth*(SMinY+y)+(SMinX+x)];
+            map_set16(Dst, DX+x, DY+y, Val);
+        }
+    }
+    return 1;
+}
+
 b32 map_set_rect8(u8 *Map, int MinX, int MinY, int MaxX, int MaxY, u8 Val) {
     if(MinX < 0) return 0;
     if(MinY < 0) return 0;
