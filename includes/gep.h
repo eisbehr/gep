@@ -393,6 +393,10 @@ typedef struct {
 
 static gep_state *g;
 
+void sprite_reset(void) {
+    memset(g->SpriteTable, 0, ArraySize(g->SpriteTable));
+}
+
 static u16 *GlobalCharLookupTable;
 static char TmpStrBuffer[ScreenW*(ScreenH+1)];
 void set_tile_string(u16 *Map, int x, int y, const char *Str) {

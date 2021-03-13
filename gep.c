@@ -621,6 +621,7 @@ void gep_update(void) {
             }
             
             u8 IndexPixel = 0;
+            // TODO handle sprite_attr.Priority
             if(SpritePx && g->Lcdc.SpriteDisplay) {
                 IndexPixel = SpritePx;
             } else {
