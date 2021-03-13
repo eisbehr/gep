@@ -430,6 +430,13 @@ int main(int argc, char** argv) {
                             case SDL_SCANCODE_ESCAPE: {
                                 ToggleSettings = 1;
                             } break;
+                            case SDL_SCANCODE_F4: {
+                                TakeScreenshot = 1;
+                            } break;
+                            case SDL_SCANCODE_F5: {
+                                if(TakeScreenRecording) TakeScreenRecording = 0;
+                                else TakeScreenRecording = 1;
+                            } break;
                             case SDL_SCANCODE_F9: {
                                 TileMapDevMode = !TileMapDevMode;
                             } break;

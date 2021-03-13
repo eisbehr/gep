@@ -302,4 +302,34 @@ void update_developer_tools(void) {
             TileSpriteMemDevWindow = 0;
         }
     }
+    
+    if(TakeScreenshot || TakeScreenRecording) {
+        TakeScreenshot = 0;
+        enum {NameBufferSize=256};
+        char NameBuffer[NameBufferSize];
+        if(TakeScreenRecording) {
+            snprintf(NameBuffer, NameBufferSize, "screenshot-%.8i.png", TakeScreenRecording);
+            TakeScreenRecording++;
+        } else {
+            snprintf(NameBuffer, NameBufferSize, "screenshot.png");
+        }
+        enum{NumPx=ScreenPxW*ScreenPxH};
+        u8 *PxSwapped = malloc(NumPx*4);
+        if(!PxSwapped) {
+            SDL_LogError(0, "Failed to alloc screenshot memory, oh well, carry on.");
+        } else {
+            pfori(NumPx) {
+                u32 SrcPx = ((u32 *)ScreenBuffer)[i];
+                u8 b0 = (u8)((SrcPx) >> 24);
+                u8 b1 = (u8)((SrcPx) >> 16);
+                u8 b2 = (u8)((SrcPx) >> 8);
+                u8 b3 = (u8)((SrcPx) >> 0);
+                ((u32 *)PxSwapped)[i] = b3 << 24 | b2 << 16 | b1 << 8 | b0;
+            }
+            if(!stbi_write_png(NameBuffer, ScreenPxW, ScreenPxH, 4, PxSwapped, 0)) {
+                SDL_LogError(0, "Failed to save screenshot, oh well, carry on.");
+            }
+            free(PxSwapped);
+        }
+    }
 }
