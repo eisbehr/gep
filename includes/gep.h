@@ -23,7 +23,7 @@ typedef int32_t b32;
 typedef uintptr_t uptr;
 typedef intptr_t ptr;
 
-#define Assert(Expression) if(!(Expression)) {int *x = 0; *x = 0;}
+#define Assert(Expression) if(!(Expression)) {int *_x = 0; *_x = 0;}
 #define StaticAssert(Expression) static_assert(Expression, "Static assert failed");
 
 #define ArrayLength(Arr) (sizeof(Arr)/sizeof(Arr[0]))
@@ -67,6 +67,10 @@ typedef intptr_t ptr;
 
 #define Min(a, b) ((a) < (b) ? (a) : (b))
 #define Max(a, b) ((a) > (b) ? (a) : (b))
+
+int abs32(int Val) {
+    return Val<0 ? -Val : Val;
+}
 
 #define Clip(From, Value, To) if((Value) > (To)) {(Value) = (To); } else if((Value) < (From)) {(Value) = (From); }
 
