@@ -63,6 +63,8 @@ Put your `game.dll` next to the `gep.exe` and `SDL2.dll` files. Then launch gep.
 |Return|Menu|Button to activate a game menu
 |Backspace|Option|Button to activate game options
 | | |
+|F5| | **DEBUG** Take screenshot
+|F6| | **DEBUG** Begin/End screen recording
 |F9| |**DEBUG** Open window showing the tile map
 |F10| |**DEBUG** Open window showing the window map
 |F11| |**DEBUG** Open window showing the tile and sprite memory
