@@ -579,11 +579,14 @@ void gep_update(void) {
         g->Lcdp.LY = y;
         if(g->Lcdp.LY == g->Lcdp.LYC && g->LYi) g->LYi();
         int Y = (g->Lcdp.SCY%BGMapPxH)+y;
-        if (Y < 0) Y-=(TileSpriteDim-1);
+        if (Y < 0) Y-=TileSpriteDim-1;
         int TileY = Y/TileSpriteDim;
-        if(TileY < 0) TileY += BGMapH;
         int TileLine = Y%TileSpriteDim;
-        if(TileLine < 0) TileLine = (TileSpriteDim-1)+TileLine;
+        if(TileY < 0) {
+            TileY += BGMapH;
+            TileLine = (TileSpriteDim-1)+TileLine;
+        }
+        
         int WrappedY = TileY%BGMapH;
         
         int WinY = y-g->Lcdp.WY;
@@ -640,9 +643,12 @@ void gep_update(void) {
                     int X = (g->Lcdp.SCX%BGMapPxW)+x;
                     if(X < 0) X-=TileSpriteDim-1;
                     int TileX = X/TileSpriteDim;
-                    if(TileX < 0) TileX += BGMapW;
                     int TilePix = X%TileSpriteDim;
-                    if(TilePix < 0) TilePix = (TileSpriteDim-1)+TilePix;
+                    if(TileX < 0) {
+                        TileX += BGMapW;
+                        TilePix = (TileSpriteDim-1)+TilePix;
+                    }
+                    
                     int WrappedX = TileX%BGMapW;
                     bg_attr Attr = g->BGAttrMap[WrappedY*BGMapW+WrappedX];
                     PalIndex = Attr.Palette;
