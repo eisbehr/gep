@@ -172,31 +172,45 @@ void map_set8(u8 *Map, int x, int y, u8 Val) {
 
 bg_attr map_get_attr(bg_attr *Map, int x, int y) {
     x = x%BGMapW;
-    y= y%BGMapH;
+    y = y%BGMapH;
     if(x < 0) x+=BGMapW;
     if(y < 0) y+=BGMapH;
     return Map[(y*BGMapW)+x];
 }
 
-u16 map_get16(u16 *Map, int x, int y) {
+u16 map_get16(const u16 *Map, int x, int y) {
     x = x%BGMapW;
-    y= y%BGMapH;
+    y = y%BGMapH;
     if(x < 0) x+=BGMapW;
     if(y < 0) y+=BGMapH;
     return Map[(y*BGMapW)+x];
 }
 
-u8 map_get8(u8 *Map, int x, int y) {
+u16 map_get16c(const u16 *Map, int MapW, int MapH, int x, int y) {
+    x = x%MapW;
+    y = y%MapH;
+    if(x < 0) x+=MapW;
+    if(y < 0) y+=MapH;
+    return Map[(y*MapW)+x];
+}
+
+u8 map_get8(const u8 *Map, int x, int y) {
     x = x%BGMapW;
-    y= y%BGMapH;
+    y = y%BGMapH;
     if(x < 0) x+=BGMapW;
     if(y < 0) y+=BGMapH;
     return Map[(y*BGMapW)+x];
+}
+
+u8 map_get8c(const u8 *Map, int MapW, int MapH, int x, int y) {
+    x = x%MapW;
+    y = y%MapH;
+    if(x < 0) x+=MapW;
+    if(y < 0) y+=MapH;
+    return Map[(y*MapW)+x];
 }
 
 b32 map_set_rect_attr(bg_attr *Map, int MinX, int MinY, int MaxX, int MaxY, bg_attr Val) {
-    if(MinX < 0) return 0;
-    if(MinY < 0) return 0;
     if(MinX > MaxX) return 0;
     if(MinY > MaxY) return 0;
     
@@ -211,8 +225,6 @@ b32 map_set_rect_attr(bg_attr *Map, int MinX, int MinY, int MaxX, int MaxY, bg_a
 }
 
 b32 map_set_rect16(u16 *Map, int MinX, int MinY, int MaxX, int MaxY, u16 Val) {
-    if(MinX < 0) return 0;
-    if(MinY < 0) return 0;
     if(MinX > MaxX) return 0;
     if(MinY > MaxY) return 0;
     
@@ -227,13 +239,14 @@ b32 map_set_rect16(u16 *Map, int MinX, int MinY, int MaxX, int MaxY, u16 Val) {
 }
 
 b32 map_copy_rect16(u16 *Dst, int DX, int DY, const u16 *Src, int SWidth, int SHeight, int SMinX, int SMinY, int SMaxX, int SMaxY) {
-    if(DX < 0 || DY < 0 || SMinX > SMaxX || SMinY > SMaxY || SMaxX>SWidth || SMaxY>SHeight) return 0;
+    if(SMinX > SMaxX || SMinY > SMaxY) return 0;
     
     int Width = SMaxX-SMinX;
     int Height = SMaxY-SMinY;
     pfory32(Height) {
         pforx32(Width) {
-            u16 Val = Src[SWidth*(SMinY+y)+(SMinX+x)];
+            //u16 Val = Src[SWidth*(SMinY+y)+(SMinX+x)];
+            u16 Val = map_get16c(Src, SWidth, SHeight, SMinX+x, SMinY+y);
             map_set16(Dst, DX+x, DY+y, Val);
         }
     }
@@ -241,8 +254,6 @@ b32 map_copy_rect16(u16 *Dst, int DX, int DY, const u16 *Src, int SWidth, int SH
 }
 
 b32 map_set_rect8(u8 *Map, int MinX, int MinY, int MaxX, int MaxY, u8 Val) {
-    if(MinX < 0) return 0;
-    if(MinY < 0) return 0;
     if(MinX > MaxX) return 0;
     if(MinY > MaxY) return 0;
     
@@ -251,6 +262,20 @@ b32 map_set_rect8(u8 *Map, int MinX, int MinY, int MaxX, int MaxY, u8 Val) {
     pfory32(Height) {
         pforx32(Width) {
             map_set8(Map, MinX+x, MinY+y, Val);
+        }
+    }
+    return 1;
+}
+
+b32 map_copy_rect8(u8 *Dst, int DX, int DY, const u8 *Src, int SWidth, int SHeight, int SMinX, int SMinY, int SMaxX, int SMaxY) {
+    if(SMinX > SMaxX || SMinY > SMaxY) return 0;
+    
+    int Width = SMaxX-SMinX;
+    int Height = SMaxY-SMinY;
+    pfory32(Height) {
+        pforx32(Width) {
+            u8 Val = map_get8c(Src, SWidth, SHeight, SMinX+x, SMinY+y);
+            map_set8(Dst, DX+x, DY+y, Val);
         }
     }
     return 1;
