@@ -147,50 +147,50 @@ typedef struct {
 #define Shade3 9
 
 void map_set_attr(bg_attr *Map, int x, int y, bg_attr Val) {
-    if(x < 0) x+=BGMapW;
-    if(y < 0) y+=BGMapH;
     x = x%BGMapW;
     y = y%BGMapH;
+    if(x < 0) x+=BGMapW;
+    if(y < 0) y+=BGMapH;
     Map[y*BGMapW+x] = Val;
 }
 
 void map_set16(u16 *Map, int x, int y, u16 Val) {
-    if(x < 0) x+=BGMapW;
-    if(y < 0) y+=BGMapH;
     x = x%BGMapW;
     y = y%BGMapH;
+    if(x < 0) x+=BGMapW;
+    if(y < 0) y+=BGMapH;
     Map[y*BGMapW+x] = Val;
 }
 
 void map_set8(u8 *Map, int x, int y, u8 Val) {
-    if(x < 0) x+=BGMapW;
-    if(y < 0) y+=BGMapH;
     x = x%BGMapW;
     y = y%BGMapH;
+    if(x < 0) x+=BGMapW;
+    if(y < 0) y+=BGMapH;
     Map[y*BGMapW+x] = Val;
 }
 
 bg_attr map_get_attr(bg_attr *Map, int x, int y) {
-    if(x < 0) x+=BGMapW;
-    if(y < 0) y+=BGMapH;
     x = x%BGMapW;
     y= y%BGMapH;
+    if(x < 0) x+=BGMapW;
+    if(y < 0) y+=BGMapH;
     return Map[(y*BGMapW)+x];
 }
 
 u16 map_get16(u16 *Map, int x, int y) {
-    if(x < 0) x+=BGMapW;
-    if(y < 0) y+=BGMapH;
     x = x%BGMapW;
     y= y%BGMapH;
+    if(x < 0) x+=BGMapW;
+    if(y < 0) y+=BGMapH;
     return Map[(y*BGMapW)+x];
 }
 
 u8 map_get8(u8 *Map, int x, int y) {
-    if(x < 0) x+=BGMapW;
-    if(y < 0) y+=BGMapH;
     x = x%BGMapW;
     y= y%BGMapH;
+    if(x < 0) x+=BGMapW;
+    if(y < 0) y+=BGMapH;
     return Map[(y*BGMapW)+x];
 }
 
