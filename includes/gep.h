@@ -162,12 +162,28 @@ void map_set16(u16 *Map, int x, int y, u16 Val) {
     Map[y*BGMapW+x] = Val;
 }
 
+void map_set16c(u16 *Map, int x, int y, int MapW, int MapH, u16 Val) {
+    x = x%MapW;
+    y = y%MapH;
+    if(x < 0) x+=MapW;
+    if(y < 0) y+=MapH;
+    Map[y*MapW+x] = Val;
+}
+
 void map_set8(u8 *Map, int x, int y, u8 Val) {
     x = x%BGMapW;
     y = y%BGMapH;
     if(x < 0) x+=BGMapW;
     if(y < 0) y+=BGMapH;
     Map[y*BGMapW+x] = Val;
+}
+
+void map_set8c(u8 *Map, int x, int y, int MapW, int MapH, u8 Val) {
+    x = x%MapW;
+    y = y%MapH;
+    if(x < 0) x+=MapW;
+    if(y < 0) y+=MapH;
+    Map[y*MapW+x] = Val;
 }
 
 bg_attr map_get_attr(bg_attr *Map, int x, int y) {
