@@ -162,7 +162,7 @@ void map_set16(u16 *Map, int x, int y, u16 Val) {
     Map[y*BGMapW+x] = Val;
 }
 
-void map_set16c(u16 *Map, int x, int y, int MapW, int MapH, u16 Val) {
+void map_set16c(u16 *Map, int MapW, int MapH, int x, int y, u16 Val) {
     x = x%MapW;
     y = y%MapH;
     if(x < 0) x+=MapW;
@@ -178,7 +178,7 @@ void map_set8(u8 *Map, int x, int y, u8 Val) {
     Map[y*BGMapW+x] = Val;
 }
 
-void map_set8c(u8 *Map, int x, int y, int MapW, int MapH, u8 Val) {
+void map_set8c(u8 *Map, int MapW, int MapH, int x, int y, u8 Val) {
     x = x%MapW;
     y = y%MapH;
     if(x < 0) x+=MapW;
