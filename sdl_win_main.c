@@ -546,7 +546,9 @@ int main(int argc, char** argv) {
             }
             
             // game update
+            BeforeGameUpdate = SDL_GetPerformanceCounter();
             update(g);
+            AfterGameUpdate = SDL_GetPerformanceCounter();
             UpdateRun -= 1.0; // subtract one whole timestep for one call to update()
             
             // do gep stuff

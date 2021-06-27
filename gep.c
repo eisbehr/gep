@@ -711,5 +711,5 @@ void gep_present(void) {
     u64 EndFrame = SDL_GetPerformanceCounter();
     f64 PerfFreq = (f64)SDL_GetPerformanceFrequency();
     u64 LockTime = AfterLock-BeforeLock;
-    //SDL_LogInfo(0, "Frame: %.2fms, Frame Present: %.2fms, Present Only: %.2fms, Audio: %.2fms, Draw: %.2fms, Lock: %.2fms", (f64)(BeforePresent-BeginFrame)*1000.0/PerfFreq, (f64)(EndFrame-BeginFrame)*1000.0/PerfFreq,(f64)(EndFrame-BeforePresent)*1000.0/PerfFreq,(f64)(AfterAudio-BeforeAudio)*1000.0/PerfFreq,(f64)(AfterDraw-BeforeDraw)*1000.0/PerfFreq,(f64)(LockTime)*1000.0/PerfFreq);
+    //SDL_LogInfo(0, "Game Update: %.4fms, Frame: %.2fms, Frame Present: %.2fms, Present Only: %.2fms, Audio: %.2fms, Draw: %.2fms, Lock: %.2fms", (f64)(AfterGameUpdate-BeforeGameUpdate)*1000.0/PerfFreq, (f64)(BeforePresent-BeginFrame)*1000.0/PerfFreq, (f64)(EndFrame-BeginFrame)*1000.0/PerfFreq,(f64)(EndFrame-BeforePresent)*1000.0/PerfFreq,(f64)(AfterAudio-BeforeAudio)*1000.0/PerfFreq,(f64)(AfterDraw-BeforeDraw)*1000.0/PerfFreq,(f64)(LockTime)*1000.0/PerfFreq);
 }

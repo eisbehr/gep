@@ -18,3 +18,5 @@ static u64 BeforeAudio;
 static u64 AfterAudio;
 static u64 BeforeDraw;
 static u64 AfterDraw;
+static u64 BeforeGameUpdate;
+static u64 AfterGameUpdate;
