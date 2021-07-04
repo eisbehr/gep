@@ -429,6 +429,7 @@ typedef struct {
     u16 WinMap[WinMapW*WinMapH];
     bg_attr WinAttrMap[BGMapW*BGMapH];
     sprite_attr SpriteTable[MaxSprites];
+    int NumSprites;
     palette Palettes[NumPalettes];
     aud_ch1 AudCh1;
     aud_ch2 AudCh2;
@@ -446,6 +447,16 @@ static gep_state *g;
 
 void sprite_reset(void) {
     memset(g->SpriteTable, 0, ArraySize(g->SpriteTable));
+    g->NumSprites = 0;
+}
+
+sprite_attr *sprite_push(sprite_attr *s) {
+    sprite_attr *Res = 0;
+    if(g->NumSprites < MaxSprites) {
+        Res = &g->SpriteTable[g->NumSprites++];
+        *Res = *s;
+    }
+    return Res;
 }
 
 static u16 _DefaultCharLookup[128] = {

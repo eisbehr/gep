@@ -262,7 +262,7 @@ int main(int argc, char **argv) {
                 exit(1);
             }
             
-            const char Hdr2[] = "static const u16 %s[] = { \n";
+            const char Hdr2[] = "static u16 %s[] = { \n";
             PrintSize = snprintf(0, 0, Hdr2, VarNameStr);
             if(fprintf(OutFile, Hdr2, VarNameStr) != PrintSize) {
                 printf("Failed to write hdr2\n");
