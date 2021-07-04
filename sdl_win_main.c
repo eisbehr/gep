@@ -264,11 +264,15 @@ int main(int argc, char** argv) {
             // calculate number of update timesteps (calls to the update() function) in one render frame (from one present() to the next)
             UpdateRun += 60.0/VsyncHz; 
         }
+        
         while(UpdateRun >= 0.0) {
             if(ToggleSettings) {
                 ToggleSettings = 0;
                 toggle_settings();
             }
+            
+            gepinput LastFrameInput = g->Input;
+            devinput LastFrameDevInput = g->DevInput;
             input_begin_frame_reset();
             SDL_Event ev;
             while (SDL_PollEvent(&ev)) {
@@ -292,7 +296,7 @@ int main(int argc, char** argv) {
                     } break;
                     case SDL_MOUSEMOTION: {
                         SDL_MouseMotionEvent *e = (SDL_MouseMotionEvent *)&ev;
-                        devinput *d = &DevInput;
+                        devinput *d = &g->DevInput;
                         if(e->windowID == SDL_GetWindowID(TileMapDevWindow)) {
                             d = &TileMapDevInput;
                         } else if(e->windowID == SDL_GetWindowID(WindowMapDevWindow)) {
@@ -307,7 +311,7 @@ int main(int argc, char** argv) {
                     } break;
                     case SDL_MOUSEBUTTONDOWN: {
                         SDL_MouseButtonEvent *e = (SDL_MouseButtonEvent *)&ev;
-                        devinput *d = &DevInput;
+                        devinput *d = &g->DevInput;
                         if(e->windowID == SDL_GetWindowID(TileMapDevWindow)) {
                             d = &TileMapDevInput;
                         } else if(e->windowID == SDL_GetWindowID(WindowMapDevWindow)) {
@@ -330,7 +334,7 @@ int main(int argc, char** argv) {
                     } break;
                     case SDL_MOUSEBUTTONUP: {
                         SDL_MouseButtonEvent *e = (SDL_MouseButtonEvent *)&ev;
-                        devinput *d = &DevInput;
+                        devinput *d = &g->DevInput;
                         if(e->windowID == SDL_GetWindowID(TileMapDevWindow)) {
                             d = &TileMapDevInput;
                         } else if(e->windowID == SDL_GetWindowID(WindowMapDevWindow)) {
@@ -353,7 +357,7 @@ int main(int argc, char** argv) {
                     } break;
                     case SDL_MOUSEWHEEL: {
                         SDL_MouseWheelEvent *e = (SDL_MouseWheelEvent *)&ev;
-                        devinput *d = &DevInput;
+                        devinput *d = &g->DevInput;
                         if(e->windowID == SDL_GetWindowID(TileMapDevWindow)) {
                             d = &TileMapDevInput;
                         } else if(e->windowID == SDL_GetWindowID(WindowMapDevWindow)) {
@@ -369,62 +373,62 @@ int main(int argc, char** argv) {
                         switch(e->keysym.scancode) {
                             case SDL_SCANCODE_W: {
                                 g->Input.Up = 1;
-                                g->InDown.Up = 1;
+                                //g->InDown.Up = 1;
                             } break;
                             case SDL_SCANCODE_A: {
                                 g->Input.Left = 1;
-                                g->InDown.Left = 1;
+                                //g->InDown.Left = 1;
                             } break;
                             case SDL_SCANCODE_S: {
                                 g->Input.Down = 1;
-                                g->InDown.Down = 1;
+                                //g->InDown.Down = 1;
                             } break;
                             case SDL_SCANCODE_D: {
                                 g->Input.Right = 1;
-                                g->InDown.Right = 1;
+                                //g->InDown.Right = 1;
                             } break;
                             
                             case SDL_SCANCODE_Q: {
                                 g->Input.L1 = 1;
-                                g->InDown.L1 = 1;
+                                //g->InDown.L1 = 1;
                             } break;
                             case SDL_SCANCODE_E: {
                                 g->Input.R1 = 1;
-                                g->InDown.R1 = 1;
+                                //g->InDown.R1 = 1;
                             } break;
                             case SDL_SCANCODE_1: {
                                 g->Input.L2 = 1;
-                                g->InDown.L2 = 1;
+                                //g->InDown.L2 = 1;
                             } break;
                             case SDL_SCANCODE_3: {
                                 g->Input.R2 = 1;
-                                g->InDown.R2 = 1;
+                                //g->InDown.R2 = 1;
                             } break;
                             
                             case SDL_SCANCODE_UP: {
                                 g->Input.a = 1;
-                                g->InDown.a = 1;
+                                //g->InDown.a = 1;
                             } break;
                             case SDL_SCANCODE_DOWN: {
                                 g->Input.b = 1;
-                                g->InDown.b = 1;
+                                //g->InDown.b = 1;
                             } break;
                             case SDL_SCANCODE_LEFT: {
                                 g->Input.x = 1;
-                                g->InDown.x = 1;
+                                //g->InDown.x = 1;
                             } break;
                             case SDL_SCANCODE_RIGHT: {
                                 g->Input.y = 1;
-                                g->InDown.y = 1;
+                                //g->InDown.y = 1;
                             } break;
                             
                             case SDL_SCANCODE_RETURN: {
                                 g->Input.Menu = 1;
-                                g->InDown.Menu = 1;
+                                //g->InDown.Menu = 1;
                             } break;
                             case SDL_SCANCODE_BACKSPACE: {
                                 g->Input.Option = 1;
-                                g->InDown.Option = 1;
+                                //g->InDown.Option = 1;
                             } break;
                             
                             case SDL_SCANCODE_ESCAPE: {
@@ -448,7 +452,7 @@ int main(int argc, char** argv) {
                             } break;
                             
                             case SDL_SCANCODE_LCTRL: {
-                                devinput *d = &DevInput;
+                                devinput *d = &g->DevInput;
                                 if(e->windowID == SDL_GetWindowID(TileMapDevWindow)) {
                                     d = &TileMapDevInput;
                                 } else if(e->windowID == SDL_GetWindowID(WindowMapDevWindow)) {
@@ -466,65 +470,65 @@ int main(int argc, char** argv) {
                         switch(e->keysym.scancode) {
                             case SDL_SCANCODE_W: {
                                 g->Input.Up = 0;
-                                g->InUp.Up = 1;
+                                //g->InUp.Up = 1;
                             } break;
                             case SDL_SCANCODE_A: {
                                 g->Input.Left = 0;
-                                g->InUp.Left = 1;
+                                //g->InUp.Left = 1;
                             } break;
                             case SDL_SCANCODE_S: {
                                 g->Input.Down = 0;
-                                g->InUp.Down = 1;
+                                //g->InUp.Down = 1;
                             } break;
                             case SDL_SCANCODE_D: {
                                 g->Input.Right = 0;
-                                g->InUp.Right = 1;
+                                //g->InUp.Right = 1;
                             } break;
                             
                             case SDL_SCANCODE_Q: {
                                 g->Input.L1 = 0;
-                                g->InUp.L1 = 1;
+                                //g->InUp.L1 = 1;
                             } break;
                             case SDL_SCANCODE_E: {
                                 g->Input.R1 = 0;
-                                g->InUp.R1 = 1;
+                                //g->InUp.R1 = 1;
                             } break;
                             case SDL_SCANCODE_1: {
                                 g->Input.L2 = 0;
-                                g->InUp.L2 = 1;
+                                //g->InUp.L2 = 1;
                             } break;
                             case SDL_SCANCODE_3: {
                                 g->Input.R2 = 0;
-                                g->InUp.R2 = 1;
+                                //g->InUp.R2 = 1;
                             } break;
                             
                             case SDL_SCANCODE_UP: {
                                 g->Input.a = 0;
-                                g->InUp.a = 1;
+                                //g->InUp.a = 1;
                             } break;
                             case SDL_SCANCODE_DOWN: {
                                 g->Input.b = 0;
-                                g->InUp.b = 1;
+                                //g->InUp.b = 1;
                             } break;
                             case SDL_SCANCODE_LEFT: {
                                 g->Input.x = 0;
-                                g->InUp.x = 1;
+                                //g->InUp.x = 1;
                             } break;
                             case SDL_SCANCODE_RIGHT: {
                                 g->Input.y = 0;
-                                g->InUp.y = 1;
+                                //g->InUp.y = 1;
                             } break;
                             
                             case SDL_SCANCODE_RETURN: {
                                 g->Input.Menu = 0;
-                                g->InUp.Menu = 1;
+                                //g->InUp.Menu = 1;
                             } break;
                             case SDL_SCANCODE_BACKSPACE: {
                                 g->Input.Option = 0;
-                                g->InUp.Option = 1;
+                                //g->InUp.Option = 1;
                             } break;
                             case SDL_SCANCODE_LCTRL: {
-                                devinput *d = &DevInput;
+                                devinput *d = &g->DevInput;
                                 if(e->windowID == SDL_GetWindowID(TileMapDevWindow)) {
                                     d = &TileMapDevInput;
                                 } else if(e->windowID == SDL_GetWindowID(WindowMapDevWindow)) {
@@ -544,6 +548,8 @@ int main(int argc, char** argv) {
                 SDL_SetWindowSize(Window, WinW, WinH);
                 SDL_SetWindowPosition(Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
             }
+            
+            input_calc_delta(g, &LastFrameInput, &LastFrameDevInput);
             
             // game update
             BeforeGameUpdate = SDL_GetPerformanceCounter();

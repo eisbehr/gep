@@ -326,10 +326,60 @@ static const i8 Noise15[4096] = {
     13,-13,-13,-15,-15,-3,-3,20,20,-27,-25,6,10,10,-31,-31};
 
 void input_begin_frame_reset(void) {
-    DevInput.mwd = 0;
-    g->InUp = (gepinput){0};
-    g->InDown = (gepinput){0};
+    g->DevInput.mwd = 0;
+    //g->InUp = (gepinput){0};
+    //g->InDown = (gepinput){0};
 }
+
+#define FillUpDown(KeyName) \
+if(LastFrame->KeyName && !Input->KeyName)  InUp->KeyName = 1; \
+if(!LastFrame->KeyName && Input->KeyName)  InDown->KeyName = 1; 
+
+#define FillDevUpDown(KeyName) \
+if(LastFrameDev->KeyName && !DevInput->KeyName)  DevUp->KeyName = 1; \
+if(!LastFrameDev->KeyName && DevInput->KeyName)  DevDown->KeyName = 1; 
+
+void input_calc_delta(gep_state *gs, gepinput *LastFrame, devinput *LastFrameDev) {
+    gepinput *Input = &gs->Input;
+    gepinput *InUp = &gs->InUp;
+    gepinput *InDown = &gs->InDown;
+    *InUp = (gepinput){0};
+    *InDown = (gepinput){0};
+    
+    FillUpDown(a);
+    FillUpDown(b);
+    FillUpDown(x);
+    FillUpDown(y);
+    
+    FillUpDown(Up);
+    FillUpDown(Down);
+    FillUpDown(Left);
+    FillUpDown(Right);
+    
+    FillUpDown(L1);
+    FillUpDown(L2);
+    FillUpDown(R1);
+    FillUpDown(R2);
+    
+    FillUpDown(Menu);
+    FillUpDown(Option);
+    
+    devinput *DevInput = &gs->DevInput;
+    devinput *DevUp = &gs->DevUp;
+    devinput *DevDown = &gs->DevDown;
+    *DevUp = (devinput){0};
+    *DevDown = (devinput){0};
+    
+    FillDevUpDown(ml);
+    FillDevUpDown(mm);
+    FillDevUpDown(mr);
+    
+    FillDevUpDown(ctrl);
+    
+}
+
+#undef FillUpDown
+#undef FillDevUpDown
 
 #include "developer_tools.c"
 

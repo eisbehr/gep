@@ -81,8 +81,6 @@ typedef struct {
     b32 ctrl;
 } devinput;
 
-static devinput DevInput;
-
 typedef struct {
     b32 a, b, x, y;
     b32 Up, Down, Left, Right;
@@ -134,9 +132,13 @@ typedef struct {
 // IMPORTANT! Need to be power of two width and height
 #define BGMapW 64
 #define BGMapH 32
+#define WinMapW BGMapW
+#define WinMapH BGMapH
 
 #define BGMapPxW (BGMapW*TileSpriteDim)
 #define BGMapPxH (BGMapH*TileSpriteDim)
+#define WinMapPxW (WinMapW*TileSpriteDim)
+#define WinMapPxH (WinMapH*TileSpriteDim)
 
 #define ShadeR 0
 #define ShadeG 1
@@ -418,10 +420,13 @@ typedef struct {
     gepinput Input;
     gepinput InDown;
     gepinput InUp;
+    devinput DevInput;
+    devinput DevDown;
+    devinput DevUp;
     u8 TileSpriteMemory[TileSpriteMemSize];
     u16 BGMap[BGMapW*BGMapH];
     bg_attr BGAttrMap[BGMapW*BGMapH];
-    u16 WinMap[BGMapW*BGMapH];
+    u16 WinMap[WinMapW*WinMapH];
     bg_attr WinAttrMap[BGMapW*BGMapH];
     sprite_attr SpriteTable[MaxSprites];
     palette Palettes[NumPalettes];
@@ -442,7 +447,50 @@ void sprite_reset(void) {
     memset(g->SpriteTable, 0, ArraySize(g->SpriteTable));
 }
 
-static u16 *GlobalCharLookupTable;
+static u16 _DefaultCharLookup[128] = {
+    ['A'] = 96,
+    ['B'] = 97,
+    ['C'] = 98,
+    ['D'] = 99,
+    ['E'] = 100,
+    ['F'] = 101,
+    ['G'] = 102,
+    ['H'] = 103,
+    ['I'] = 104,
+    ['J'] = 105,
+    ['K'] = 106,
+    ['L'] = 107,
+    ['M'] = 108,
+    ['N'] = 109,
+    ['O'] = 110,
+    ['P'] = 111,
+    ['Q'] = 112,
+    ['R'] = 113,
+    ['S'] = 114,
+    ['T'] = 115,
+    ['U'] = 116,
+    ['V'] = 117,
+    ['W'] = 118,
+    ['X'] = 119,
+    ['Y'] = 120,
+    ['Z'] = 121,
+    
+    ['0'] = 128,
+    ['1'] = 129,
+    ['2'] = 130,
+    ['3'] = 131,
+    ['4'] = 132,
+    ['5'] = 133,
+    ['6'] = 134,
+    ['7'] = 135,
+    ['8'] = 136,
+    ['9'] = 137,
+    
+    ['!'] = 122,
+    ['?'] = 123,
+};
+
+static u16 *GlobalCharLookupTable = _DefaultCharLookup;
 static char TmpStrBuffer[ScreenW*(ScreenH+1)];
 void set_tile_string(u16 *Map, int x, int y, const char *Str) {
     int XOrig = x;
@@ -469,7 +517,18 @@ typedef enum {
     TextBoxBorderBottomRight,
 } text_box_border;
 
-static u16 *GlobalTextBoxBorderLookupTable;
+static u16 _DefaultTextBoxBorderLookup[] = {
+    [TextBoxBorderTopLeft] = 8,
+    [TextBoxBorderTop] = 9,
+    [TextBoxBorderTopRight] = 10,
+    [TextBoxBorderMiddleLeft] = 40,
+    [TextBoxBorderMiddleRight] = 42,
+    [TextBoxBorderBottomLeft] = 72,
+    [TextBoxBorderBottom] = 73,
+    [TextBoxBorderBottomRight] = 74,
+};
+
+static u16 *GlobalTextBoxBorderLookupTable = _DefaultTextBoxBorderLookup;
 b32 set_tile_text_box(u16 *Map, int XMin, int YMin, int XMax, int YMax) {
     XMax--;
     YMax--;
