@@ -735,6 +735,8 @@ void gep_update(void) {
     SDL_UnlockTexture(ScreenTex);
     AfterLock = SDL_GetPerformanceCounter();
     
+    g->ScreenScale = ScreenScale;
+    
     update_developer_tools();
 }
 

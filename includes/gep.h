@@ -437,6 +437,7 @@ typedef struct {
     audc Audc;
     lcdp Lcdp;
     lcd_ctrl Lcdc;
+    int ScreenScale;
     LX_interrupt_function LXi;
     LY_interrupt_function LYi;
 } gep_state;
