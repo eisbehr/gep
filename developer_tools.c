@@ -305,13 +305,13 @@ void update_developer_tools(void) {
     
     if(TakeScreenshot || TakeScreenRecording) {
         TakeScreenshot = 0;
-        enum {NameBufferSize=256};
+        enum {NameBufferSize=1024};
         char NameBuffer[NameBufferSize];
         if(TakeScreenRecording) {
-            snprintf(NameBuffer, NameBufferSize, "screenshot-%.8i.png", TakeScreenRecording);
+            snprintf(NameBuffer, NameBufferSize, "%s/screenshot-%.8i.png", ScreenCaptureDirectory ? ScreenCaptureDirectory : "", TakeScreenRecording);
             TakeScreenRecording++;
         } else {
-            snprintf(NameBuffer, NameBufferSize, "screenshot.png");
+            snprintf(NameBuffer, NameBufferSize, "%s/screenshot.png", ScreenCaptureDirectory ? ScreenCaptureDirectory : "");
         }
         enum{NumPx=ScreenPxW*ScreenPxH};
         u8 *PxSwapped = malloc(NumPx*4);

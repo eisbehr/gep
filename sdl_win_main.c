@@ -129,6 +129,10 @@ int main(int argc, char** argv) {
     gi = &GepStateInt;
     switch_to_settings = gep_switch_to_settings;
     
+    if(argc == 3 && strcmp(argv[1], "--screencapdir")==0) {
+        ScreenCaptureDirectory = argv[2];
+    }
+    
     SDL_LogSetPriority(0, SDL_LOG_PRIORITY_VERBOSE);
     if(SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)) {
         SDL_LogError(0, "Unable to initialize SDL: %s", SDL_GetError());

@@ -24,3 +24,5 @@ static devinput TileSpriteDevInput;
 
 static b32 TakeScreenshot;
 static b32 TakeScreenRecording;
+
+static const char *ScreenCaptureDirectory;
