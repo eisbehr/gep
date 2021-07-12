@@ -263,9 +263,22 @@ b32 map_copy_rect16(u16 *Dst, int DX, int DY, const u16 *Src, int SWidth, int SH
     int Height = SMaxY-SMinY;
     pfory32(Height) {
         pforx32(Width) {
-            //u16 Val = Src[SWidth*(SMinY+y)+(SMinX+x)];
             u16 Val = map_get16c(Src, SWidth, SHeight, SMinX+x, SMinY+y);
             map_set16(Dst, DX+x, DY+y, Val);
+        }
+    }
+    return 1;
+}
+
+b32 map_copy_rect16c(u16 *Dst, int DstW, int DstH, int DX, int DY, const u16 *Src, int SWidth, int SHeight, int SMinX, int SMinY, int SMaxX, int SMaxY) {
+    if(SMinX > SMaxX || SMinY > SMaxY) return 0;
+    
+    int Width = SMaxX-SMinX;
+    int Height = SMaxY-SMinY;
+    pfory32(Height) {
+        pforx32(Width) {
+            u16 Val = map_get16c(Src, SWidth, SHeight, SMinX+x, SMinY+y);
+            map_set16c(Dst, DstW, DstH, DX+x, DY+y, Val);
         }
     }
     return 1;
@@ -299,6 +312,20 @@ b32 map_copy_rect8(u8 *Dst, int DX, int DY, const u8 *Src, int SWidth, int SHeig
     return 1;
 }
 
+b32 map_copy_rect8c(u8 *Dst, int DstW, int DstH, int DX, int DY, const u8 *Src, int SWidth, int SHeight, int SMinX, int SMinY, int SMaxX, int SMaxY) {
+    if(SMinX > SMaxX || SMinY > SMaxY) return 0;
+    
+    int Width = SMaxX-SMinX;
+    int Height = SMaxY-SMinY;
+    pfory32(Height) {
+        pforx32(Width) {
+            u8 Val = map_get8c(Src, SWidth, SHeight, SMinX+x, SMinY+y);
+            map_set8c(Dst, DstW, DstH, DX+x, DY+y, Val);
+        }
+    }
+    return 1;
+}
+
 typedef struct {
     int x, y;
     int TileNumber;
@@ -308,7 +335,7 @@ typedef struct {
     i8 Palette;
 } sprite_attr;
 
-#define MaxSprites 40
+#define MaxSprites 256
 
 typedef void (*LX_interrupt_function)(void);
 typedef void (*LY_interrupt_function)(void);
