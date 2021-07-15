@@ -126,6 +126,7 @@ b32 set_fullscreen(SDL_Window *Win, b32 Borderless, b32 Enable) {
 
 int main(int argc, char** argv) {
     g = &GepState;
+    g->gep_log = SDL_Log;
     gi = &GepStateInt;
     switch_to_settings = gep_switch_to_settings;
     

@@ -74,6 +74,8 @@ int abs32(int Val) {
 
 #define Clip(From, Value, To) if((Value) > (To)) {(Value) = (To); } else if((Value) < (From)) {(Value) = (From); }
 
+typedef void (*gep_log_function)(const char *Fmt, ...);
+
 typedef struct {
     f32 mx, my;
     b32 ml, mm, mr;
@@ -468,6 +470,7 @@ typedef struct {
     int ScreenScale;
     LX_interrupt_function LXi;
     LY_interrupt_function LYi;
+    gep_log_function gep_log;
 } gep_state;
 
 static gep_state *g;
