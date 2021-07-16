@@ -471,6 +471,7 @@ typedef struct {
     LX_interrupt_function LXi;
     LY_interrupt_function LYi;
     gep_log_function gep_log;
+    const char *SaveFilePath;
 } gep_state;
 
 static gep_state *g;

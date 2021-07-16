@@ -72,4 +72,3 @@ Put your `game.dll` next to the `gep.exe` and `SDL2.dll` files. Then launch gep.
 - Controller support
 - Key rebinding
 - Proper handling of non-60hz refresh rates. For now just use exclusive fullscreen which should set the display to 60hz.
-- a save file system of some kind

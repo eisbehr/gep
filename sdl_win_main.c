@@ -177,7 +177,7 @@ int main(int argc, char** argv) {
     if(!PrefPath) {
         SDL_LogError(0, "Failed to get PrefPath");
     }
-    
+    g->SaveFilePath = PrefPath;
     // set default values here
     prefs *Prefs = &(prefs){.Version=1, .Fullscreen=0, .Volume=50};
     if(!settings_read(Prefs)) {
