@@ -1,15 +1,25 @@
 // serialization code notes:
 /*
-- As long as new serialize() members are added to the back, and none removed, old files can be loaded without a version change.
-- If struct members get removed, the serialize() should stay in place and use a dummy value instead (type){0}. For readability, keep the name of the serialized member as a comment
-- To fully remove serialize()d data, do a version bump. Load with the appropriate version for the file and write with the most recent version and everything should work out fine.
-   --* This means only the function that reads the file needs to deal with different versions, the function that writes can just write the latest
-- To make this simpler, append a version number to the names of your serialize functions
+- As long as new serialize() members are added to the back, and none removed, 
+old files can be loaded without a version change.
+- If struct members get removed, the serialize() should stay in place and use 
+a dummy value instead (type){0}. For readability, keep the name of the 
+serialized member as a comment
+- To fully remove serialize()d data, do a version bump. Load with the 
+appropriate version for the file and write with the most recent version and 
+everything should work out fine.
+   --* This means only the function that reads the file needs to deal with 
+different versions, the function that writes can just write the latest
+- To make this simpler, append a version number to the names of your serialize 
+functions
 - use the serialize_generic_header_base() at the beginning of the file.
-- each variable length block of data needs its own sub-header describing at least the size of the data objects and their number.
+- each variable length block of data needs its own sub-header describing at 
+least the size of the data objects and their number.
 
  Explanation and Examples:
-In the following function we are serializing a basic game object. One of its members has been removed and is no longer used. The function name ends with the number 1 to denote that it is the first version
+In the following function we are serializing a basic game object. One of its 
+members has been removed and is no longer used. The function name ends with 
+the number 1 to denote that it is the first version
 */
 #if 0
 int serialize_object1(sctx *Ctx, object *Object) {
@@ -23,8 +33,11 @@ int serialize_object1(sctx *Ctx, object *Object) {
 }
 #endif
 /*
-To use this serialization we allocate a context on the stack and zero-initialize it (this is important).
-The functions ssize(), sread(), and swrite() are used to configure the context for each of these operation modes, and to reset it between serialization function calls. Always call the appropriate function before a serialization.
+To use this serialization we allocate a context on the stack and 
+zero-initialize it (this is important).
+The functions ssize(), sread(), and swrite() are used to configure the context 
+for each of these operation modes, and to reset it between serialization 
+function calls. Always call the appropriate function before a serialization.
 */
 #if 0
 ...
@@ -34,7 +47,8 @@ serialize_object1(&Ctx, Object);
 ...
 #endif
 /*
-This can also be made a little more compact by calling the context preparation function as the first argument.
+This can also be made a little more compact by calling the context preparation 
+function as the first argument.
 */
 #if 0
 ...
@@ -70,6 +84,7 @@ int serialize_object1(sctx *Ctx, object *Object) {
     
     return Ctx->SerializeSize;
 }
+
 b32 object_file_write(object *Objects, int NumObjects) {
     u64 Magic = *(u64*)"OBJECTDB";
     int Version = 1;
@@ -89,8 +104,8 @@ b32 object_file_write(object *Objects, int NumObjects) {
     if(serialize_generic_header(swrite(&Ctx), &Magic, &Version, &HeaderSize)==-1) goto err;
     if(fwrite(Ctx.Buffer, HeaderBaseSize, 1, File)!=1) goto err;
     
-    // write floor header
-    if(_serialize_object_header1(swrite(&Ctx), &NumObjects, &ObjectSize)==-1) goto err;
+    // write object header
+    if(serialize_object_header1(swrite(&Ctx), &NumObjects, &ObjectSize)==-1) goto err;
     if(fwrite(Ctx.Buffer, HeaderObjectSize, 1, File)!=1) goto err;
     
     // write objects
@@ -128,7 +143,7 @@ b32 object_file_read(object *Objects, int MaxObjects, int *NumObjects) {
     switch(Version) {
         case 1: {
             int ObjectSize = 0;
-            // read tile header
+            // read object header
             int HeaderRestSize = HeaderSize-HeaderBaseSize;
             if(fread(Ctx.Buffer, HeaderRestSize, 1, File)!=1) goto err;
             if(serialize_object_header1(sread(&Ctx, HeaderRestSize), NumObjects, &ObjectSize)==-1) goto err;
@@ -170,7 +185,7 @@ typedef struct {
     char Buffer[SCtxBufferSize]; // The buffer used for (de-)serialization
     serialize_mode Mode;
     int MaxReadSize; // When in mode_read, use this to limit reading up to the object size from the respective header
-    int SerializeSize; // The size of the data actually serialized. Used for nesting serialization functions. NOTE: Needs to be reset to zero before calling a top-level serialization function
+    int SerializeSize; // The size of the data actually serialized. Used for nesting serialization functions. NOTE: Needs to be reset to zero before calling a top-level serialization function (by default, this is done in ssize(), sread() and swrite())
 } sctx;
 
 #define serialize(Ctx, Type, Val) \
@@ -186,6 +201,7 @@ sctx *ssize(sctx *Ctx) {
     return Ctx;
 }
 
+// MaxReadSize is the object size as read from the header. If the data object in the file is smaller than the object in the current serialization function, this stops the read after the appropriate number of bytes.
 sctx *sread(sctx *Ctx, int MaxReadSize) {
     Ctx->Mode = smode_read;
     Ctx->SerializeSize = 0;
